@@ -11,6 +11,8 @@ namespace DigitalDefender
         public Color endColor = Color.red;
         public Color obsticalColor = Color.black;
         public Color knightColor = Color.yellow;
+
+        private Dictionary<Vector3, GameObject> _dictionaryOfObsticals = new Dictionary<Vector3, GameObject>();
         private void Awake()
         {
             parent = this.transform;
@@ -37,7 +39,7 @@ namespace DigitalDefender
                 if (mapData.ObsticalesArray[i])
                 {
                     var coordinates = mapGrid.CalculateCoordinatesFromIndex(i);
-                    if (coordinates != mapData.StartPoint && coordinates != mapData.EndPoint)
+                    if (coordinates != mapData.StartPoint && coordinates != mapData.EndPoint && !_dictionaryOfObsticals.ContainsKey(coordinates))
                     {
                         if(PlaceKnightPeice(mapData, coordinates))
                         {
@@ -77,11 +79,22 @@ namespace DigitalDefender
         private void CreateIndicator(Vector3 position, Color color, PrimitiveType primitiveType)
         {
             var element = GameObject.CreatePrimitive(primitiveType);
+            _dictionaryOfObsticals.Add(position, element);
+
             element.transform.position = position + new Vector3(0.5f, 0.5f, 0.5f);
             element.transform.parent = parent;
             var renderer = element.GetComponent<Renderer>();
             renderer.material.SetColor("_Color", color);
             
+        }
+
+        public void ClearMap()
+        {
+            foreach (var obstical in _dictionaryOfObsticals.Values)
+            {
+                Destroy(obstical);
+            }
+            _dictionaryOfObsticals.Clear();
         }
     }
 }

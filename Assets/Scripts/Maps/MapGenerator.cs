@@ -22,12 +22,16 @@ namespace DigitalDefender
         private  MapGrid mapGrid;
         private void Start()
         {
-            if (gridVisualizer == null)
-            {
-                gridVisualizer = new GridVisualizer();
-            }
-            MapGrid mapGrid = new MapGrid(width, length);
+
             gridVisualizer.VisulaizeGrid(width, length);
+            GenerateNewMap();
+            
+        }
+
+        public void GenerateNewMap()
+        {
+            MapGrid mapGrid = new MapGrid(width, length);
+            mapVisualizer.ClearMap();
             MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref startPositions, ref endPositions, randomPlaceStartAndEnd,
                 startEdgeDirection, endEdgeDirection);
             
@@ -38,9 +42,6 @@ namespace DigitalDefender
             CandidateMap candidateMap = new CandidateMap(mapGrid, numberOfPieces);
             candidateMap.CreateMap(startPositions, endPositions);
             mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), false);
-            
-    
-            //mapGrid.CheckCoordinates();
         }
 
         // Update is called once per frame
