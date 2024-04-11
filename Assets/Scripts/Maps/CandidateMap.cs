@@ -10,7 +10,7 @@ namespace DigitalDefender
         public MapGrid mapGrid;
         private int numberOfPeices = 0;
         private bool[] obsticalesArray = null;
-        private Vector3 startPoint, endPoint;
+        private Vector3Int startPoint, endPoint;
         private List<KnightPeice> KnightPeicesList;
         
         public MapGrid MapGrid { get => mapGrid; }
@@ -24,7 +24,7 @@ namespace DigitalDefender
             this.numberOfPeices = numberOfPieces;
             this.KnightPeicesList = new List<KnightPeice>();
         }
-        public void CreateMap(Vector3 startPoint, Vector3 endPoint, bool autoRepair = false)
+        public void CreateMap(Vector3Int startPoint, Vector3Int endPoint, bool autoRepair = false)
         {
             this.startPoint = startPoint;
             this.endPoint = endPoint;
@@ -33,7 +33,7 @@ namespace DigitalDefender
             _FillObsticalArrayFromKnightLocations();
         }
         
-        private bool CheckIfPositionCanBeObstical(Vector3 position)
+        private bool CheckIfPositionCanBeObstical(Vector3Int position)
         {
             if (position == startPoint || position == endPoint)
             {
@@ -63,7 +63,6 @@ namespace DigitalDefender
                     var coords = mapGrid.CalculateCoordinatesFromIndex(randomIndex);
                     Debug.Log($"Checking Coords: {coords}");
                     if(coords == startPoint || coords == endPoint)
-                        
                     {
                         continue;
                     }
@@ -87,7 +86,7 @@ namespace DigitalDefender
             {
                 foreach (var relativeIndex in KnightPeice.PossibleMoves)
                 {
-                    Vector3 possiblePosition = knight.Position + relativeIndex;
+                    Vector3Int possiblePosition = knight.Position + relativeIndex;
                     Debug.Log($"Possible Position for obstical {possiblePosition}");
                     if (mapGrid.IsPositionValid(position:possiblePosition))
                     {

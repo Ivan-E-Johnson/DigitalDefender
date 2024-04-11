@@ -76,6 +76,11 @@ namespace DigitalDefender
             // This is a float version of the CalculateIndexFromCoordinates method
             return CalculateIndexFromCoordinates((int)x, (int)z);
         }
+
+        public int CalculateIndexFromVector3Int(Vector3Int position)
+        {
+            return CalculateIndexFromCoordinates(position.x, position.z);
+        }
         
         
         public void TestCheckCoordinates()
@@ -93,14 +98,14 @@ namespace DigitalDefender
                 Debug.Log(msg.ToString());
             }
         }
-        public Vector3 CalculateCoordinatesFromIndex(int index)
+        public Vector3Int CalculateCoordinatesFromIndex(int index)
         {
             int x = index % width;
             int z = index / width;
-            return new Vector3(x, 0, z);
+            return new Vector3Int(x, 0, z);
         }
 
-        public bool IsPositionValid(Vector3 position)
+        public bool IsPositionValid(Vector3Int position)
         {
             return IsCellValid((int)position.x, (int)position.z);
         }

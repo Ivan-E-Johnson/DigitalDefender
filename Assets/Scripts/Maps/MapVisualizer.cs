@@ -12,7 +12,7 @@ namespace DigitalDefender
         public Color obsticalColor = Color.black;
         public Color knightColor = Color.yellow;
 
-        private Dictionary<Vector3, GameObject> _dictionaryOfObsticals = new Dictionary<Vector3, GameObject>();
+        private Dictionary<Vector3Int, GameObject> _dictionaryOfObsticals = new Dictionary<Vector3Int, GameObject>();
         private void Awake()
         {
             parent = this.transform;
@@ -43,12 +43,12 @@ namespace DigitalDefender
                     {
                         if(PlaceKnightPeice(mapData, coordinates))
                         {
-                            CreateIndicator(new Vector3(coordinates.x, 0, coordinates.z), knightColor,
+                            CreateIndicator(new Vector3Int(coordinates.x, 0, coordinates.z), knightColor,
                                 PrimitiveType.Cylinder);
                         }
                         else
                         {
-                            CreateIndicator(new Vector3(coordinates.x,0, coordinates.z), obsticalColor,
+                            CreateIndicator(new Vector3Int(coordinates.x,0, coordinates.z), obsticalColor,
                                 PrimitiveType.Sphere);
                         }
                     }
@@ -57,7 +57,7 @@ namespace DigitalDefender
             }
         }
         
-        private bool PlaceKnightPeice(MapData mapData, Vector3 coordinates)
+        private bool PlaceKnightPeice(MapData mapData, Vector3Int coordinates)
         {
             foreach (var knightPeice in mapData.KnightPeicesList)
             {
@@ -76,7 +76,7 @@ namespace DigitalDefender
             CreateIndicator(mapData.EndPoint, endColor, PrimitiveType.Cube);
         }
         
-        private void CreateIndicator(Vector3 position, Color color, PrimitiveType primitiveType)
+        private void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
         {
             var element = GameObject.CreatePrimitive(primitiveType);
             _dictionaryOfObsticals.Add(position, element);

@@ -60,7 +60,7 @@ public class EntitySummoner : MonoBehaviour
       else
       {
         GameObject enemyPrefab = EnemyPrefabs[enemyID];
-        GameObject newEnemyObject = Instantiate(enemyPrefab, Vector3.zero, Quaternion.identity);
+        GameObject newEnemyObject = Instantiate(enemyPrefab, Vector3Int.zero, Quaternion.identity);
         SummonedEnemy = newEnemyObject.GetComponent<Enemy>();
         SummonedEnemy.Initialize();
         

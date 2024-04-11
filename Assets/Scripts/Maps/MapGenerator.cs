@@ -18,7 +18,7 @@ namespace DigitalDefender
         [Range(5,20)] // This will create a slider in the editor that will allow you to set the width of the grid
         public int width, length = 11;
 
-        private Vector3 startPositions, endPositions;
+        private Vector3Int startPositions, endPositions;
         private  MapGrid mapGrid;
         private void Start()
         {
@@ -27,7 +27,7 @@ namespace DigitalDefender
             GenerateNewMap();
             
         }
-
+        
         public void GenerateNewMap()
         {
             MapGrid mapGrid = new MapGrid(width, length);

@@ -6,8 +6,8 @@ namespace DigitalDefender
     {
         public bool[] ObsticalesArray;
         public List<KnightPeice> KnightPeicesList;
-        public Vector3 StartPoint;
-        public Vector3 EndPoint;
+        public Vector3Int StartPoint;
+        public Vector3Int EndPoint;
 
     }
 }

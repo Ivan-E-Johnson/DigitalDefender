@@ -42,7 +42,7 @@ namespace Game
                 if (_enemyIDsToSpawn.Count > 0)
                 {
                     Enemy enemy = EntitySummoner.SummonEnemy(_enemyIDsToSpawn.Dequeue());
-                    enemy.transform.position = new Vector3(0, 0, 0); //Make summon enemies in available spawn points 
+                    enemy.transform.position = new Vector3Int(0, 0, 0); //Make summon enemies in available spawn points 
                     // EntitySummoner.EnemiesInGame.Add(enemy); // Do we need this?
                 }
                 
