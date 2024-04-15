@@ -7,12 +7,12 @@ namespace AStar
     public class VertexPosition : IEquatable<VertexPosition>, IComparable<VertexPosition>
     {
 
-        public static List<Vector3Int> possibleNeighbours = new List<Vector3Int>()
+        public static readonly Vector3Int[] possibleNeighbours = 
         {
-            Vector3Int.left,
-            Vector3Int.right,
-            Vector3Int.up,
-            Vector3Int.down
+            new Vector3Int(0, 0, 1),  // Up
+            new Vector3Int(0, 0, -1), // Down
+            new Vector3Int(-1, 0, 0), // Left
+            new Vector3Int(1, 0, 0)   // Right
         };
 
         // totalCost is distance from Startpoint to this point
@@ -33,6 +33,12 @@ namespace AStar
         public Vector3Int Position
         {
             get => _position;
+        }
+        
+        public bool isTaken
+        {
+            get => _isTaken;
+            set => _isTaken = value;
         }
 
         public VertexPosition(Vector3Int position, bool isTaken)

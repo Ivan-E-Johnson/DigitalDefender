@@ -321,11 +321,11 @@ MonoBehaviour:
   gridVisualizer: {fileID: 667591208}
   mapVisualizer: {fileID: 1739971395}
   randomPlaceStartAndEnd: 0
-  startEdgeDirection: 0
-  endEdgeDirection: 0
-  numberOfPieces: 7
-  width: 20
-  length: 20
+  startEdgeDirection: 1
+  endEdgeDirection: 2
+  numberOfPieces: 4
+  width: 6
+  length: 8
 --- !u!1 &783408604
 GameObject:
   m_ObjectHideFlags: 0

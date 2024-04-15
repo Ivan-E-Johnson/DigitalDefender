@@ -51,6 +51,7 @@ namespace DigitalDefender
                             CreateIndicator(new Vector3Int(coordinates.x,0, coordinates.z), obsticalColor,
                                 PrimitiveType.Sphere);
                         }
+                        
                     }
                     
                 }
@@ -76,10 +77,11 @@ namespace DigitalDefender
             CreateIndicator(mapData.EndPoint, endColor, PrimitiveType.Cube);
         }
         
-        private void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
+        
+        public void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
         {
             var element = GameObject.CreatePrimitive(primitiveType);
-            _dictionaryOfObsticals.Add(position, element);
+            this._dictionaryOfObsticals.Add(position, element);
 
             element.transform.position = position + new Vector3(0.5f, 0.5f, 0.5f);
             element.transform.parent = parent;

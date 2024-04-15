@@ -30,11 +30,16 @@ namespace DigitalDefender
         
         public void GenerateNewMap()
         {
-            MapGrid mapGrid = new MapGrid(width, length);
+            this.mapGrid = new MapGrid(width, length);
             mapVisualizer.ClearMap();
             MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref startPositions, ref endPositions, randomPlaceStartAndEnd,
                 startEdgeDirection, endEdgeDirection);
             
+            if (startPositions == null || endPositions == null)
+            {
+                Debug.Log("Start or End positions are null");
+                return;
+            }
             Debug.Log("*******************");
             Debug.Log("Start Position: " + startPositions);
             Debug.Log("End Position: " + endPositions);
@@ -42,6 +47,7 @@ namespace DigitalDefender
             CandidateMap candidateMap = new CandidateMap(mapGrid, numberOfPieces);
             candidateMap.CreateMap(startPositions, endPositions);
             mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), false);
+            
         }
 
         // Update is called once per frame

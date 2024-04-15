@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using System.Linq;
+using AStar;
+
 
 namespace DigitalDefender
 {
@@ -12,10 +15,12 @@ namespace DigitalDefender
         private bool[] obsticalesArray = null;
         private Vector3Int startPoint, endPoint;
         private List<KnightPeice> KnightPeicesList;
+        private List<Vector3Int> _pathList;
+        
         
         public MapGrid MapGrid { get => mapGrid; }
         public int NumberOfPeices { get => numberOfPeices; }
-        public bool[] ObsticalesArray { get => obsticalesArray; }
+        public bool[] ObsticalesArray { get => this.obsticalesArray; }
         
         
         public CandidateMap(MapGrid mapGrid, int numberOfPieces)
@@ -31,8 +36,48 @@ namespace DigitalDefender
             this.obsticalesArray = new bool[mapGrid.Width * mapGrid.Length];
             RandomlyPlaceKnightPieces(numberOfPeices);
             _FillObsticalArrayFromKnightLocations();
+            _FindPath();
+            if (autoRepair && _pathList.Count == 0)
+            {
+                    Debug.Log("No Path Found, Attempting to repair");
+                    //CreateMap(startPoint, endPoint, autoRepair);
+            }
+            foreach( var path in _pathList)
+            {
+                Debug.Log($"Path: {path}");
+                _CreateIndicator(new Vector3Int(path.x, 0, path.z), Color.magenta, 
+                    PrimitiveType.Cylinder);
+            }
+            
+            
         }
-        
+
+        private void _FindPath()
+        {
+            
+            if (startPoint == null || endPoint == null || ObsticalesArray == null || mapGrid == null)
+            {
+                throw new ArgumentNullException("One or more arguments are null");
+            }
+            
+            this._pathList = AStar.AStar.GetPath( startPoint, endPoint,ObsticalesArray, MapGrid);
+            
+            Debug.Log($"Path Length: {_pathList.Count}");
+            
+            foreach (var positionVector3Int in _pathList)
+            {
+                Debug.Log($"Postion :{positionVector3Int}");
+                
+            }
+        }
+
+        private static void _CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
+        {
+            var element = GameObject.CreatePrimitive(primitiveType);
+            element.transform.position = position + new Vector3(0.5f, 0.5f, 0.5f);
+            element.GetComponent<Renderer>().material.color = color;
+        }
+
         private bool CheckIfPositionCanBeObstical(Vector3Int position)
         {
             if (position == startPoint || position == endPoint)
@@ -52,16 +97,16 @@ namespace DigitalDefender
         {
             var KnightPlacementTryMax = 100;
             var PeicesLeftToPlace = numberOfPeicesToPlace;
-            Debug.Log($"Coords of StartPoint {startPoint}");
-            Debug.Log($"Coords of endPoint {endPoint}");
+            // Debug.Log($"Coords of StartPoint {startPoint}");
+            // Debug.Log($"Coords of endPoint {endPoint}");
             while(PeicesLeftToPlace > 0 && KnightPlacementTryMax > 0)
             {
-                var randomIndex = Random.Range(0, obsticalesArray.Length);
+                var randomIndex = Random.Range(0, ObsticalesArray.Length);
                 if (obsticalesArray[randomIndex] == false)
                 {   
-                    Debug.Log($"$Attempting to place object {numberOfPeicesToPlace-PeicesLeftToPlace} at index {randomIndex} ");
+                    // Debug.Log($"$Attempting to place object {numberOfPeicesToPlace-PeicesLeftToPlace} at index {randomIndex} ");
                     var coords = mapGrid.CalculateCoordinatesFromIndex(randomIndex);
-                    Debug.Log($"Checking Coords: {coords}");
+                    // Debug.Log($"Checking Coords: {coords}");
                     if(coords == startPoint || coords == endPoint)
                     {
                         continue;
@@ -87,12 +132,12 @@ namespace DigitalDefender
                 foreach (var relativeIndex in KnightPeice.PossibleMoves)
                 {
                     Vector3Int possiblePosition = knight.Position + relativeIndex;
-                    Debug.Log($"Possible Position for obstical {possiblePosition}");
+                    // Debug.Log($"Possible Position for obstical {possiblePosition}");
                     if (mapGrid.IsPositionValid(position:possiblePosition))
                     {
                         if (CheckIfPositionCanBeObstical(possiblePosition))
                         {
-                            obsticalesArray[mapGrid.CalculateIndexFromCoordinates(possiblePosition.x, possiblePosition.z)] =
+                            this.obsticalesArray[mapGrid.CalculateIndexFromCoordinates(possiblePosition.x, possiblePosition.z)] =
                                 true;
                         }
                     }
