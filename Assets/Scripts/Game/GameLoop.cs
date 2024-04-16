@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Enemys;
 using UnityEngine;
 
 namespace Game
@@ -9,13 +10,15 @@ namespace Game
         public bool loopShouldEnd;
 
         private static Queue<int> _enemyIDsToSpawn;
+        private static Queue<int> _towerIDsToSpawn;
+        
         private void Start()
         {
             _enemyIDsToSpawn = new Queue<int>();
             EntitySummoner.Initialize();
             StartCoroutine(GameLoop());
-            InvokeRepeating("TestSummonEnemy", 0f, 1f);
-            InvokeRepeating("TestRemoveEnemy", 0f, 1f);
+            InvokeRepeating(nameof(TestSummonEnemy), 0f, 1f);
+            InvokeRepeating(nameof(TestRemoveEnemy), 0f, 1f);
         }
         void TestSummonEnemy()
         {

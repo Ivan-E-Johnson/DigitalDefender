@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace AStar
@@ -7,7 +6,7 @@ namespace AStar
     public class VertexPosition : IEquatable<VertexPosition>, IComparable<VertexPosition>
     {
 
-        public static readonly Vector3Int[] possibleNeighbours = 
+        public static readonly Vector3Int[] PossibleNeighbours = 
         {
             new Vector3Int(0, 0, 1),  // Up
             new Vector3Int(0, 0, -1), // Down
@@ -15,27 +14,21 @@ namespace AStar
             new Vector3Int(1, 0, 0)   // Right
         };
 
-        // totalCost is distance from Startpoint to this point
+        // totalCost is distance from Start point to this point
         // estimated Cost = Shortest Path between this point and the End point
-        public float totalCost, estimatedCost;
+        public float TotalCost, EstimatedCost;
         public VertexPosition PreviousVertexPosition = null;
-        private Vector3Int _position;
+        private readonly Vector3Int _position;
         private bool _isTaken;
-        public int X
-        {
-            get => _position.x;
-        }
-        public int Z
-        {
-            get => _position.z;
-        }
+        public int X => _position.x;
+
+        public int Y => _position.y;
         
-        public Vector3Int Position
-        {
-            get => _position;
-        }
+        public int Z => _position.z;
         
-        public bool isTaken
+        public Vector3Int Position => _position;
+
+        public bool IsTaken
         {
             get => _isTaken;
             set => _isTaken = value;
@@ -45,8 +38,8 @@ namespace AStar
         {
             _position = Vector3Int.RoundToInt(position);
             _isTaken = isTaken;
-            estimatedCost = 0;
-            totalCost = 1;
+            EstimatedCost = 0;
+            TotalCost = 1;
         }
         
 
@@ -61,18 +54,18 @@ namespace AStar
         
         public bool Equals(VertexPosition other)
         {
-            return Position == other.Position;
+            return other != null && Position == other.Position;
 
         }
 
         public int CompareTo(VertexPosition other)
         {
-            if (this.estimatedCost < other.estimatedCost) // Put other object before other in list
+            if (this.EstimatedCost < other.EstimatedCost) // Put other object before other in list
             {
                 return -1;
             }
 
-            if (this.estimatedCost > other.estimatedCost) // Put this object after other object
+            if (this.EstimatedCost > other.EstimatedCost) // Put this object after other object
             {
                 return 1;
             }

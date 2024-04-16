@@ -4,6 +4,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using System.Linq;
 using AStar;
+using Maps;
 
 
 namespace DigitalDefender
@@ -14,7 +15,7 @@ namespace DigitalDefender
         private int numberOfPeices = 0;
         private bool[] obsticalesArray = null;
         private Vector3Int startPoint, endPoint;
-        private List<KnightPeice> KnightPeicesList;
+        private List<KnightPiece> KnightPeicesList;
         private List<Vector3Int> _pathList;
         
         
@@ -27,7 +28,7 @@ namespace DigitalDefender
         {
             this.mapGrid = mapGrid;
             this.numberOfPeices = numberOfPieces;
-            this.KnightPeicesList = new List<KnightPeice>();
+            this.KnightPeicesList = new List<KnightPiece>();
         }
         public void CreateMap(Vector3Int startPoint, Vector3Int endPoint, bool autoRepair = false)
         {
@@ -117,7 +118,7 @@ namespace DigitalDefender
                         continue;
                     }
                     obsticalesArray[randomIndex] = true;
-                    KnightPeicesList.Add(new KnightPeice(coords));
+                    KnightPeicesList.Add(new KnightPiece(coords));
                     PeicesLeftToPlace--;
                     
                 }
@@ -129,7 +130,7 @@ namespace DigitalDefender
         {
             foreach (var knight in KnightPeicesList)
             {
-                foreach (var relativeIndex in KnightPeice.PossibleMoves)
+                foreach (var relativeIndex in KnightPiece.PossibleMoves)
                 {
                     Vector3Int possiblePosition = knight.Position + relativeIndex;
                     // Debug.Log($"Possible Position for obstical {possiblePosition}");

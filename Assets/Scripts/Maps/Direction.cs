@@ -1,4 +1,4 @@
-namespace DigitalDefender
+namespace Maps
 {
     public enum Direction
     {

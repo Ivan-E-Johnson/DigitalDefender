@@ -1,17 +1,33 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class Enemy: MonoBehaviour
+namespace Enemys
 {
-    public float maxHealth = 100;
-    public float currentHealth = 100;
-    public float speed = 10;
-    public int ID;
-    
-    public void Initialize()
+    public class Enemy: MonoBehaviour
     {
-        currentHealth = maxHealth;
+        public float maxHealth = 100;
+        public float currentHealth = 100;
+        public float speed = 10;
+        [FormerlySerializedAs("ID")] public int id;
+    
+        public void Initialize()
+        {
+            currentHealth = maxHealth;//
         
-    }
+        }
+        
+        public void TakeDamage(float damage)
+        {
+            currentHealth -= damage;
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
+        }
 
+        private void Die()
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 }

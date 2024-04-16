@@ -1,13 +1,13 @@
 using UnityEngine;
 
-namespace DigitalDefender
+namespace Maps
 {
     public class GridVisualizer : MonoBehaviour
     {
         public GameObject groundPrefab;
 
 
-        public void VisulaizeGrid(int width, int length)
+        public void VisualizeGrid(int width, int length)
         {
             Vector3Int position = new Vector3Int(width / 2, 0, length / 2);
             Quaternion rotation = Quaternion.Euler(90, 0, 0); // Rotate the ground 90 degrees on the x-axis so you can see from above

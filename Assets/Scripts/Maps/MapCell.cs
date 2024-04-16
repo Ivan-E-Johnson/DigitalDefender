@@ -1,26 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace DigitalDefender
+namespace Maps
 {
     public class MapCell
     {
-        private int x, z;
-        private bool isTaken;
-        private MapCellObjectType objectType;
+        // Prefer to user Auto-Properties when possible
+        public int X { get; }
+        public int Z { get; }
+        public bool IsTaken { get; set; }
 
-        public int X { get => x; }
-        public int Z { get => z; }
-        public bool IsTaken { get => isTaken;  set => isTaken = value; }
-        public MapCellObjectType ObjectType { get => objectType; set => objectType = value; }
+        public MapCellObjectType ObjectType { get; set; }
 
         public MapCell(int x, int z)
         {
-            this.x = x;
-            this.z = z;
-            isTaken = false;
-            objectType = MapCellObjectType.Empty;
+            this.X = x;
+            this.Z = z;
+            IsTaken = false;
+            ObjectType = MapCellObjectType.Empty;
 
         }
 

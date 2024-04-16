@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Maps;
 using UnityEngine;
 
 namespace DigitalDefender
@@ -23,7 +24,7 @@ namespace DigitalDefender
         private void Start()
         {
 
-            gridVisualizer.VisulaizeGrid(width, length);
+            gridVisualizer.VisualizeGrid(width, length);
             GenerateNewMap();
             
         }

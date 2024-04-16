@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DigitalDefender;
 using UnityEngine;
@@ -7,7 +6,7 @@ namespace AStar
 {
     public static class AStar
     {
-        public static List<Vector3Int> GetPath(Vector3Int startPosition, Vector3Int endPosition, bool[] obsticalsArray,
+        public static List<Vector3Int> GetPath(Vector3Int startPosition, Vector3Int endPosition, bool[] obstaclesBoolArrayBool,
             MapGrid grid)
         {
             VertexPosition startVertexPosition = new VertexPosition(startPosition, false);
@@ -20,17 +19,15 @@ namespace AStar
 
             
             // Debug.Log($"Start Position: {startPosition}, End Position: {endPosition}");
-            // Debug.Log($"Obstacles Array Null: {obsticalsArray == null}, Grid Null: {grid == null}");
+            // Debug.Log($"Obstacles Array Null: {obstaclesBoolArrayBool == null}, Grid Null: {grid == null}");
 
-            startVertexPosition.estimatedCost = ManhatanDistance(startVertexPosition, endVertexPosition);
+            startVertexPosition.EstimatedCost = ManhattanDistance(startVertexPosition, endVertexPosition);
             openedList.Add(startVertexPosition);
-
-            VertexPosition currentVertex = null;
 
             while (openedList.Count > 0)
             {
                 openedList.Sort();
-                currentVertex = openedList[0];
+                var currentVertex = openedList[0];
 
                 if (currentVertex.Equals(endVertexPosition))
                 {
@@ -44,7 +41,7 @@ namespace AStar
                     break;
                 }
                 
-                var arrayOfNeighbors = _FindNeighborFor(currentVertex, grid, obsticalsArray);
+                var arrayOfNeighbors = _FindNeighborFor(currentVertex, grid, obstaclesBoolArrayBool);
                 foreach (var neighbor in arrayOfNeighbors)
                 {
                     
@@ -54,13 +51,13 @@ namespace AStar
                     }
                     // Debug.Log($"Neighbor: {neighbor.Position} isTaken: {neighbor.isTaken}");
                     
-                    if (neighbor.isTaken == false)
+                    if (neighbor.IsTaken == false)
                     {
-                        var totalCost = currentVertex.totalCost + 1;
-                        var neighborEstimatedCost = ManhatanDistance(neighbor, endVertexPosition);
-                        neighbor.totalCost = totalCost;
+                        var totalCost = currentVertex.TotalCost + 1;
+                        var neighborEstimatedCost = ManhattanDistance(neighbor, endVertexPosition);
+                        neighbor.TotalCost = totalCost;
                         neighbor.PreviousVertexPosition = currentVertex;
-                        neighbor.estimatedCost = totalCost + neighborEstimatedCost;
+                        neighbor.EstimatedCost = totalCost + neighborEstimatedCost;
                         
                         // Debug.Log("openedList Count: " + openedList.Count);
                         // Debug.Log("closedList Count: " + closedList.Count);
@@ -71,7 +68,7 @@ namespace AStar
                         if (openedList.Contains(neighbor) == false)
                         {
                             
-                            Debug.Log($"Adding Neighbor: {neighbor.Position} Total Cost: {neighbor.totalCost} Estimated Cost: {neighbor.estimatedCost}");
+                            Debug.Log($"Adding Neighbor: {neighbor.Position} Total Cost: {neighbor.TotalCost} Estimated Cost: {neighbor.EstimatedCost}");
                             openedList.Add(neighbor);
                             Debug.Log("openedList Count: " + openedList.Count);
 
@@ -96,12 +93,12 @@ namespace AStar
             return path;
         }
 
-        private static VertexPosition[] _FindNeighborFor(VertexPosition currentVertex,  MapGrid grid, bool[] obsticalsArray)
+        private static VertexPosition[] _FindNeighborFor(VertexPosition currentVertex,  MapGrid grid, bool[] obstaclesBoolArrayBool)
         {
-            VertexPosition[] arrayOfNeighbors = new VertexPosition[4]; // Set size for left, right, up, down
+            VertexPosition[] arrayOfNeighbors = new VertexPosition[VertexPosition.PossibleNeighbours.Length]; // Set size for left, right, up, down
 
             int arrayIndex = 0;
-            foreach (var possibleNeighbor in VertexPosition.possibleNeighbours)
+            foreach (var possibleNeighbor in VertexPosition.PossibleNeighbours)
             {
                 Vector3Int positionVector3Int = new Vector3Int(currentVertex.X + possibleNeighbor.x, 0,
                     currentVertex.Z + possibleNeighbor.z);
@@ -109,7 +106,7 @@ namespace AStar
                 if (grid.IsCellValid(positionVector3Int.x, positionVector3Int.z))
                 {
                     // Debug.Log($"Valid Neighbor: {positionVector3Int}");
-                    arrayOfNeighbors[arrayIndex] = new VertexPosition(positionVector3Int,obsticalsArray[grid.CalculateIndexFromVector3Int(positionVector3Int)]);
+                    arrayOfNeighbors[arrayIndex] = new VertexPosition(positionVector3Int,obstaclesBoolArrayBool[grid.CalculateIndexFromVector3Int(positionVector3Int)]);
                     arrayIndex++;   
                 }
                 
@@ -119,10 +116,10 @@ namespace AStar
             return arrayOfNeighbors;
         }
 
-        private static float ManhatanDistance(VertexPosition startVertexPosition, VertexPosition endVertexPostion)
+        private static float ManhattanDistance(VertexPosition startVertexPosition, VertexPosition endVertexPosition)
         {
-            return Mathf.Abs(startVertexPosition.X - endVertexPostion.X) +
-                   Mathf.Abs(startVertexPosition.Z - endVertexPostion.Z);
+            return Mathf.Abs(startVertexPosition.X - endVertexPosition.X) +
+                   Mathf.Abs(startVertexPosition.Z - endVertexPosition.Z);
         }
     }
 }
