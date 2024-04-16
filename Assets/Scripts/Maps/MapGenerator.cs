@@ -11,8 +11,8 @@ namespace DigitalDefender
         public GridVisualizer gridVisualizer;
         public MapVisualizer mapVisualizer;
         public bool randomPlaceStartAndEnd;
-        public Direction startEdgeDirection;
-        public Direction endEdgeDirection;
+        public EdgeDirection startEdgeDirection;
+        public EdgeDirection endEdgeDirection;
         [Range(1,10)]
         public int numberOfPieces = 5;
 

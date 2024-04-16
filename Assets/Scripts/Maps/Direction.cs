@@ -1,6 +1,6 @@
 namespace Maps
 {
-    public enum Direction
+    public enum EdgeDirection
     {
         None,
         Up,
