@@ -9,6 +9,7 @@ namespace DigitalDefender
         public List<KnightPiece> KnightPeicesList;
         public Vector3Int StartPoint;
         public Vector3Int EndPoint;
+        public List<Vector3Int> Path;
 
     }
 }

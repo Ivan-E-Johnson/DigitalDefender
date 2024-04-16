@@ -13,6 +13,9 @@ namespace DigitalDefender
         public bool randomPlaceStartAndEnd;
         public EdgeDirection startEdgeDirection;
         public EdgeDirection endEdgeDirection;
+        public bool visualizeUsingPrefabs = false; // Change this in the future
+        public bool autoRepair = true;
+        
         [Range(1,10)]
         public int numberOfPieces = 5;
 
@@ -33,21 +36,23 @@ namespace DigitalDefender
         {
             this.mapGrid = new MapGrid(width, length);
             mapVisualizer.ClearMap();
+            // This will initialize the start and end positions in the mapGrid
+            // 
             MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref startPositions, ref endPositions, randomPlaceStartAndEnd,
-                startEdgeDirection, endEdgeDirection);
+                startEdgeDirection, endEdgeDirection); 
             
             if (startPositions == null || endPositions == null)
             {
                 Debug.Log("Start or End positions are null");
-                return;
+                throw new System.Exception("Start or End positions are null");
             }
             Debug.Log("*******************");
             Debug.Log("Start Position: " + startPositions);
             Debug.Log("End Position: " + endPositions);
             Debug.Log("*******************");
             CandidateMap candidateMap = new CandidateMap(mapGrid, numberOfPieces);
-            candidateMap.CreateMap(startPositions, endPositions);
-            mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), false);
+            candidateMap.CreateMap(startPositions, endPositions, autoRepair);
+            mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), visualizeUsingPrefabs);
             
         }
 

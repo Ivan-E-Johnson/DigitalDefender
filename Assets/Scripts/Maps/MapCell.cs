@@ -24,7 +24,7 @@ namespace Maps
     public enum MapCellObjectType
     {
         Empty,
-        Eoad, // What is this?
+        Road, 
         Obstical,
         Start,
         End

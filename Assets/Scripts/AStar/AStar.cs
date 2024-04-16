@@ -68,9 +68,9 @@ namespace AStar
                         if (openedList.Contains(neighbor) == false)
                         {
                             
-                            Debug.Log($"Adding Neighbor: {neighbor.Position} Total Cost: {neighbor.TotalCost} Estimated Cost: {neighbor.EstimatedCost}");
+                            // Debug.Log($"Adding Neighbor: {neighbor.Position} Total Cost: {neighbor.TotalCost} Estimated Cost: {neighbor.EstimatedCost}");
                             openedList.Add(neighbor);
-                            Debug.Log("openedList Count: " + openedList.Count);
+                            // Debug.Log("openedList Count: " + openedList.Count);
 
                         }    
                     }

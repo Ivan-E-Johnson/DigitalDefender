@@ -12,6 +12,14 @@ namespace Maps
         public Color endColor = Color.red;
         [FormerlySerializedAs("obsticalColor")] public Color obstacleColor = Color.black;
         public Color knightColor = Color.yellow;
+        
+        public GameObject roadStraightPrefab;
+        public GameObject roadCornerPrefab;
+        public GameObject tileEmptyPrefab;
+        public GameObject tileStartPrefab;
+        public GameObject tileEndPrefab;
+        
+        public GameObject[] tileEnvironmentPrefabs;
 
         private Dictionary<Vector3Int, GameObject> _dictionaryOfObsticals = new Dictionary<Vector3Int, GameObject>();
         private void Awake()
@@ -23,7 +31,7 @@ namespace Maps
         {
             if (visualizeUsingPrefabs)
             {
-              
+                VisualizeUsingPrefabs(mapGrid, mapData);
             }
             else
             {
@@ -31,10 +39,66 @@ namespace Maps
             }
 
         }
-        
+        private void VisualizeUsingPrefabs(MapGrid mapGrid, MapData mapData)
+        {
+            for( int i=0; i < mapData.Path.Count; i++)
+            {
+                var vec3IntPathPosition = mapData.Path[i];
+                if (vec3IntPathPosition != mapData.StartPoint && vec3IntPathPosition != mapData.EndPoint)
+                {
+                    mapGrid.SetCell(vec3IntPathPosition.x, vec3IntPathPosition.z, MapCellObjectType.Road);
+                }
+            }
+
+            for (int col = 0; col < mapGrid.Width; col++)
+            {
+                for (int row = 0; row < mapGrid.Length; row++)
+                {
+                    var cell = mapGrid.GetCell(col, row);
+                    var position = new Vector3(col, 0, row);
+                    var index = mapGrid.CalculateIndexFromCoordinates(col, row);
+                    if (mapData.ObsticalesArray[index] && cell.IsTaken)
+                    {
+                        cell.ObjectType = MapCellObjectType.Obstical;
+                    }
+                    
+                    var identityQuaternion = Quaternion.identity;
+                    switch (cell.ObjectType)
+                    {
+                        case MapCellObjectType.Empty:
+                            CreatePrefabIndicator(position, tileEmptyPrefab, identityQuaternion);
+                            break;
+                        case MapCellObjectType.Start:
+                            CreatePrefabIndicator(position, tileStartPrefab, identityQuaternion);
+                            break;
+                        case MapCellObjectType.End:
+                            CreatePrefabIndicator(position, tileEndPrefab, identityQuaternion);
+                            break;
+                        case MapCellObjectType.Obstical:
+                            CreatePrefabIndicator(position, tileEnvironmentPrefabs[Random.Range(0, tileEnvironmentPrefabs.Length)], identityQuaternion);
+                            break;
+                        case MapCellObjectType.Road:
+                            CreatePrefabIndicator(position, roadStraightPrefab, identityQuaternion); // TODO Dynamicly change the road prefab
+                            break;
+                    }   
+
+                    
+                }
+            }
+        }
+
+        private void CreatePrefabIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new Quaternion())
+        {
+            var placementPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
+            var element = Instantiate(prefab, placementPosition, rotation);
+            element.transform.parent = _parent;
+            _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
+        }
+
+
         private void VisualizeUsingPrimitives(MapGrid mapGrid, MapData mapData)
         {
-            PlaceStartAndEndPoints(mapData);
+            _PlaceStartAndEndPointsPrimatives(mapData);
             for (int i =0; i < mapData.ObsticalesArray.Length; i++)
             {
                 if (mapData.ObsticalesArray[i])
@@ -72,7 +136,7 @@ namespace Maps
             return false;
         }
         
-        private void PlaceStartAndEndPoints(MapData mapData)
+        private void _PlaceStartAndEndPointsPrimatives(MapData mapData)
         {
             CreateIndicator(mapData.StartPoint, startColor, PrimitiveType.Cube);
             CreateIndicator(mapData.EndPoint, endColor, PrimitiveType.Cube);
