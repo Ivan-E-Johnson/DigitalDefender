@@ -41,7 +41,7 @@ namespace DigitalDefender
             if (autoRepair && _pathList.Count == 0)
             {
                     Debug.Log("No Path Found, Attempting to repair");
-                    //CreateMap(startPoint, endPoint, autoRepair);
+                    CreateMap(startPoint:startPoint, endPoint:endPoint, autoRepair:true);
             }
             foreach( var path in _pathList)
             {
@@ -96,11 +96,11 @@ namespace DigitalDefender
         
         private void RandomlyPlaceKnightPieces(int numberOfPeicesToPlace)
         {
-            var KnightPlacementTryMax = 100;
-            var PeicesLeftToPlace = numberOfPeicesToPlace;
+            var knightPlacementTryMax = 100;
+            var piecesLeftToPlace = numberOfPeicesToPlace;
             // Debug.Log($"Coords of StartPoint {startPoint}");
             // Debug.Log($"Coords of endPoint {endPoint}");
-            while(PeicesLeftToPlace > 0 && KnightPlacementTryMax > 0)
+            while(piecesLeftToPlace > 0 && knightPlacementTryMax > 0)
             {
                 var randomIndex = Random.Range(0, ObsticalesArray.Length);
                 if (obsticalesArray[randomIndex] == false)
@@ -119,10 +119,10 @@ namespace DigitalDefender
                     }
                     obsticalesArray[randomIndex] = true;
                     KnightPeicesList.Add(new KnightPiece(coords));
-                    PeicesLeftToPlace--;
+                    piecesLeftToPlace--;
                     
                 }
-                KnightPlacementTryMax--;
+                knightPlacementTryMax--;
             }
         }
 
