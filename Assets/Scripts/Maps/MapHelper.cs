@@ -16,12 +16,12 @@ namespace Maps
             }
             else
             {
-                startPoint = RandomlyChooseEdgePosition(mapGrid);
-                endPoint = RandomlyChooseEdgePosition(mapGrid);
+                startPoint = RandomlyChooseEdgePosition(mapGrid, startingEdge);
+                endPoint = RandomlyChooseEdgePosition(mapGrid, endingEdge);
             }
 
-            mapGrid.SetCell(startPoint.X, startPoint.X, MapCellObjectType.Start);
-            mapGrid.SetCell(endPoint.X, endPoint.X, MapCellObjectType.End);
+            mapGrid.SetCell(startPoint.X, startPoint.Z, MapCellObjectType.Start);
+            mapGrid.SetCell(endPoint.X, endPoint.Z, MapCellObjectType.End);
         }
 
         private static MapCenterPoint RandomlyChooseEdgePosition(MapGrid mapGrid,
