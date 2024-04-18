@@ -59,7 +59,7 @@ namespace Maps
                     var index = mapGrid.CalculateIndexFromCoordinates(col, row);
                     if (mapData.ObsticalesArray[index] && cell.IsTaken)
                     {
-                        cell.ObjectType = MapCellObjectType.Obstical;
+                        cell.ObjectType = MapCellObjectType.Obstacle;
                     }
                     
                     var identityQuaternion = Quaternion.identity;
@@ -74,7 +74,7 @@ namespace Maps
                         case MapCellObjectType.End:
                             CreatePrefabIndicator(position, tileEndPrefab, identityQuaternion);
                             break;
-                        case MapCellObjectType.Obstical:
+                        case MapCellObjectType.Obstacle:
                             CreatePrefabIndicator(position, tileEnvironmentPrefabs[Random.Range(0, tileEnvironmentPrefabs.Length)], identityQuaternion);
                             break;
                         case MapCellObjectType.Road:

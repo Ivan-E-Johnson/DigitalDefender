@@ -52,6 +52,7 @@ namespace DigitalDefender
         }
         public bool IsCellValid(int x, int z)
         {
+            // This method checks if the cell is within the bounds of the grid
             return x >= 0 && x < width && z >= 0 && z < length;
         }
         public MapCell GetCell(int x, int z)
@@ -62,12 +63,7 @@ namespace DigitalDefender
             }
             return null;
         }
-        public MapCell GetCell(float x, float z)
-        {
-            // This is a float version of the GetCell method
-            return GetCell((int)x, (int)z);
-        }
-
+        
         public int CalculateIndexFromCoordinates(int x, int z)
         {
             return z * width + x;
