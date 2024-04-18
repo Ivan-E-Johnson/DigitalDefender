@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Maps;
 using UnityEngine;
 
-namespace DigitalDefender
+namespace Maps
 {
     public class MapGenerator : MonoBehaviour
     {
         // Start is called before the first frame update
-        public GridVisualizer gridVisualizer;
-        public MapVisualizer mapVisualizer;
+        [CanBeNull] public GridVisualizer gridVisualizer;
+        [CanBeNull] public MapVisualizer mapVisualizer;
         public bool randomPlaceStartAndEnd;
         public EdgeDirection startEdgeDirection;
         public EdgeDirection endEdgeDirection;
@@ -21,43 +22,46 @@ namespace DigitalDefender
         [Range(5, 20)] // This will create a slider in the editor that will allow you to set the width of the grid
         public int width, length = 11;
 
-        private Vector3Int startPositions, endPositions;
+        
         private MapGrid mapGrid;
+        [CanBeNull] private MapCenterPoint _startPositions;
+        [CanBeNull] private MapCenterPoint _endPositions;
 
         private void Start()
         {
-            gridVisualizer.VisualizeGrid(width, length);
             GenerateNewMap();
         }
 
         public void GenerateNewMap()
+        
+
         {
+            
             mapGrid = new MapGrid(width, length);
-            mapVisualizer.ClearMap();
+            gridVisualizer.VisualizeGrid(width, length);
+            mapVisualizer.ClearMap();        // TODO FIX THIS SOMETHING DOESN't GET CLEARED WHEN YOU GENERATE A NEW MAP
+            
             // This will initialize the start and end positions in the mapGrid
             // 
-            MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref startPositions, ref endPositions,
+            MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref _startPositions, ref _endPositions,
                 randomPlaceStartAndEnd,
                 startEdgeDirection, endEdgeDirection);
-
-            if (startPositions == null || endPositions == null)
+            
+            
+            if (_startPositions == null || _endPositions == null)
             {
-                Debug.Log("Start or End positions are null");
+                // Debug.Log("Start or End positions are null");
                 throw new System.Exception("Start or End positions are null");
             }
 
             Debug.Log("*******************");
-            Debug.Log("Start Position: " + startPositions);
-            Debug.Log("End Position: " + endPositions);
+            Debug.Log("Start Position: " + _startPositions);
+            Debug.Log("End Position: " + _endPositions);
             Debug.Log("*******************");
             var candidateMap = new CandidateMap(mapGrid, numberOfPieces);
-            candidateMap.CreateMap(startPositions, endPositions, autoRepair);
+            candidateMap.CreateMap(_startPositions, _endPositions, autoRepair);
             mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), visualizeUsingPrefabs);
         }
-
-        // Update is called once per frame
-        private void Update()
-        {
-        }
+        
     }
 }

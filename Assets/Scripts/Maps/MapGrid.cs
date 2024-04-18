@@ -2,7 +2,7 @@ using System.Text;
 using Maps;
 using UnityEngine;
 
-namespace DigitalDefender
+namespace Maps
 {
     public class MapGrid
     {
@@ -30,6 +30,14 @@ namespace DigitalDefender
                 }
             }
         }
+        
+        // public void SetCell(MapCenterPoint centerPoint, MapCellObjectType objectType, bool isTaken = false)
+        // {
+        //     // Dont love this 
+        //     // Check if null
+        //     if (centerPoint == null) return;
+        //     SetCell(centerPoint.X, centerPoint.Z, objectType, isTaken); 
+        // }
 
         public void SetCell(int x, int z, MapCellObjectType objectType, bool isTaken = false)
         {
@@ -76,6 +84,9 @@ namespace DigitalDefender
             return z * Width + x;
         }
 
+        
+        // Should these be named the same thing? 
+        
         public int CalculateIndexFromCoordinates(float x, float z)
         {
             // This is a float version of the CalculateIndexFromCoordinates method

@@ -1,8 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-
-namespace DigitalDefender
+namespace Maps
 {
     [CustomEditor(typeof(MapGenerator))]
     public class MapGeneratorInspector : Editor

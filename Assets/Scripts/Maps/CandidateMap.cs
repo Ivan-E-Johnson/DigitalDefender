@@ -7,14 +7,14 @@ using AStar;
 using Maps;
 
 
-namespace DigitalDefender
+namespace Maps
 {
     public class CandidateMap
     {
         public MapGrid mapGrid;
         private int _numberOfPeices = 0;
         private bool[] _obsticalesArray = null;
-        private Vector3Int _startPoint, _endPoint;
+        private MapCenterPoint _startPoint, _endPoint;
         private List<KnightPiece> _knightPiecesList;
         private List<Vector3Int> _pathList;
 
@@ -31,7 +31,7 @@ namespace DigitalDefender
             _knightPiecesList = new List<KnightPiece>();
         }
 
-        public void CreateMap(Vector3Int startPoint, Vector3Int endPoint, bool autoRepair)
+        public void CreateMap(MapCenterPoint startPoint, MapCenterPoint endPoint, bool autoRepair)
         {
             _startPoint = startPoint;
             _endPoint = endPoint;
@@ -81,7 +81,7 @@ namespace DigitalDefender
                 }
 
                 // Recalculate the path and see if it is valid
-                _pathList = AStar.AStar.GetPath(_startPoint, _endPoint, _obsticalesArray, mapGrid);
+                _pathList = AStar.AStar.GetPath(_startPoint.Position, _endPoint.Position, _obsticalesArray, mapGrid);
                 if (_pathList != null && _pathList.Count > 0)
                 {
                     Debug.Log($"Path found with {number_of_current_obsticals} obstacles still in place.");
@@ -105,7 +105,7 @@ namespace DigitalDefender
             if (_startPoint == null || _endPoint == null || BoolObsticalesArray == null || mapGrid == null)
                 throw new ArgumentNullException("One or more arguments are null");
 
-            _pathList = AStar.AStar.GetPath(_startPoint, _endPoint, BoolObsticalesArray, MapGrid);
+            _pathList = AStar.AStar.GetPath(_startPoint.Position, _endPoint.Position, BoolObsticalesArray, MapGrid);
 
             Debug.Log($"Path Length: {_pathList.Count}");
 
@@ -124,7 +124,7 @@ namespace DigitalDefender
 
         private bool CheckIfPositionCanBeObstical(Vector3Int position)
         {
-            if (position == _startPoint || position == _endPoint) return false;
+            if (position == _startPoint.Position || position == _endPoint.Position) return false;
             var index = mapGrid.CalculateIndexFromCoordinates(position.x, position.z);
             if (_obsticalesArray[index]) return false;
             return true;
@@ -145,7 +145,7 @@ namespace DigitalDefender
                     // Debug.Log($"$Attempting to place object {numberOfPeicesToPlace-PeicesLeftToPlace} at index {randomIndex} ");
                     var coords = mapGrid.CalculateCoordinatesFromIndex(randomIndex);
                     // Debug.Log($"Checking Coords: {coords}");
-                    if (coords == _startPoint || coords == _endPoint) continue;
+                    if (coords == _startPoint.Position || coords == _endPoint.Position) continue;
                     // Check if a knight piece already exists at this index
                     if (_knightPiecesList.Any(kp => kp.Position == coords)) continue;
                     _obsticalesArray[randomIndex] = true;

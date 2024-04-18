@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DigitalDefender;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -44,7 +43,7 @@ namespace Maps
             for (var i = 0; i < mapData.Path.Count; i++)
             {
                 var vec3IntPathPosition = mapData.Path[i];
-                if (vec3IntPathPosition != mapData.StartPoint && vec3IntPathPosition != mapData.EndPoint)
+                if (vec3IntPathPosition != mapData.StartPoint.Position && vec3IntPathPosition != mapData.EndPoint.Position)
                     mapGrid.SetCell(vec3IntPathPosition.x, vec3IntPathPosition.z, MapCellObjectType.Road);
             }
 
@@ -100,7 +99,7 @@ namespace Maps
                 if (mapData.ObsticalesArray[i])
                 {
                     var coordinates = mapGrid.CalculateCoordinatesFromIndex(i);
-                    if (coordinates != mapData.StartPoint && coordinates != mapData.EndPoint &&
+                    if (coordinates != mapData.StartPoint.Position && coordinates != mapData.EndPoint.Position &&
                         !_dictionaryOfObsticals.ContainsKey(coordinates))
                     {
                         if (PlaceKnightPeice(mapData, coordinates))
@@ -116,7 +115,7 @@ namespace Maps
             for (var j = 0; j < mapData.Path.Count; j++)
             {
                 var pathPosition = mapData.Path[j];
-                if (pathPosition != mapData.StartPoint && pathPosition != mapData.EndPoint)
+                if (pathPosition != mapData.StartPoint.Position && pathPosition != mapData.EndPoint.Position)
                     CreateIndicator(pathPosition, Color.blue, PrimitiveType.Cube);
             }
         }
@@ -133,8 +132,8 @@ namespace Maps
 
         private void _PlaceStartAndEndPointsPrimatives(MapData mapData)
         {
-            CreateIndicator(mapData.StartPoint, startColor, PrimitiveType.Cube);
-            CreateIndicator(mapData.EndPoint, endColor, PrimitiveType.Cube);
+            CreateIndicator(mapData.StartPoint.Position, startColor, PrimitiveType.Cube);
+            CreateIndicator(mapData.EndPoint.Position, endColor, PrimitiveType.Cube);
         }
 
 
@@ -153,6 +152,8 @@ namespace Maps
         {
             foreach (var obstical in _dictionaryOfObsticals.Values) Destroy(obstical);
             _dictionaryOfObsticals.Clear();
+            
+            
         }
     }
 }
