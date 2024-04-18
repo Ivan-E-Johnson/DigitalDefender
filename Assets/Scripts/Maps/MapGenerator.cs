@@ -54,6 +54,7 @@ namespace DigitalDefender
             candidateMap.CreateMap(startPositions, endPositions, autoRepair);
             mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), visualizeUsingPrefabs);
             
+            
         }
 
         // Update is called once per frame

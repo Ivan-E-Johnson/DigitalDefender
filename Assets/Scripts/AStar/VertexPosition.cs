@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace AStar
 {
+    // Possible TODO: Make a base class for generic "MapVertexLocation" that can be used as a replacement for VertexPosition
     public class VertexPosition : IEquatable<VertexPosition>, IComparable<VertexPosition>
     {
 

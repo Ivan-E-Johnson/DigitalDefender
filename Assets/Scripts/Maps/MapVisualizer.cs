@@ -118,10 +118,20 @@ namespace Maps
                         }
                         
                     }
-                    
                 }
             }
+            for (int j=0; j < mapData.Path.Count; j++)
+            {
+                var pathPosition = mapData.Path[j];
+                if (pathPosition != mapData.StartPoint && pathPosition != mapData.EndPoint)
+                {
+                    CreateIndicator(pathPosition, Color.blue, PrimitiveType.Cube);
+                }
+
+ 
+            }
         }
+        
         
         private bool PlaceKnightPeice(MapData mapData, Vector3Int coordinates)
         {

@@ -10,6 +10,10 @@ namespace DigitalDefender
         public Vector3Int StartPoint;
         public Vector3Int EndPoint;
         public List<Vector3Int> Path;
+        public override string ToString() => $"(StartPoint: {StartPoint}, EndPoint: {EndPoint}, Path: {Path}, " +
+                                             $"ObsticalesArray: {ObsticalesArray},KnightPeicesList: {KnightPeicesList}) ";
 
     }
+    
+    
 }
