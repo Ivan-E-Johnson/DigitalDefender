@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Maps;
 using UnityEngine;
+
 namespace DigitalDefender
 {
     public struct MapData
@@ -10,10 +11,11 @@ namespace DigitalDefender
         public Vector3Int StartPoint;
         public Vector3Int EndPoint;
         public List<Vector3Int> Path;
-        public override string ToString() => $"(StartPoint: {StartPoint}, EndPoint: {EndPoint}, Path: {Path}, " +
-                                             $"ObsticalesArray: {ObsticalesArray},KnightPeicesList: {KnightPeicesList}) ";
 
+        public override string ToString()
+        {
+            return $"(StartPoint: {StartPoint}, EndPoint: {EndPoint}, Path: {Path}, " +
+                   $"ObsticalesArray: {ObsticalesArray},KnightPeicesList: {KnightPeicesList}) ";
+        }
     }
-    
-    
 }

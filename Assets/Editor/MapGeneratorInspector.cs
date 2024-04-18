@@ -12,19 +12,14 @@ namespace DigitalDefender
         private void OnEnable()
         {
             map = (MapGenerator)target; // ? 
-            
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             if (Application.isPlaying)
-            {
                 if (GUILayout.Button("Generate New Map"))
-                {
                     map.GenerateNewMap();
-                }
-            }
         }
     }
 }
