@@ -7,7 +7,7 @@ namespace Enemys
     {
         public GameObject enemyPrefab;
         public int enemyID;
-    
+
         // public int enemyCount;
         // public float spawnInterval;
         // public float spawnRadius;

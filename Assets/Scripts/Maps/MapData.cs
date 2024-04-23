@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Maps;
 using UnityEngine;
+
 namespace DigitalDefender
 {
     public struct MapData
@@ -10,6 +11,5 @@ namespace DigitalDefender
         public Vector3Int StartPoint;
         public Vector3Int EndPoint;
         public List<Vector3Int> Path;
-
     }
 }

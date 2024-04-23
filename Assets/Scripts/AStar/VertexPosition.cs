@@ -5,73 +5,63 @@ namespace AStar
 {
     public class VertexPosition : IEquatable<VertexPosition>, IComparable<VertexPosition>
     {
-
-        public static readonly Vector3Int[] PossibleNeighbours = 
+        public static readonly Vector3Int[] PossibleNeighbours =
         {
-            new Vector3Int(0, 0, 1),  // Up
-            new Vector3Int(0, 0, -1), // Down
-            new Vector3Int(-1, 0, 0), // Left
-            new Vector3Int(1, 0, 0)   // Right
+            new(0, 0, 1), // Up
+            new(0, 0, -1), // Down
+            new(-1, 0, 0), // Left
+            new(1, 0, 0) // Right
         };
+
+        public VertexPosition PreviousVertexPosition = null;
 
         // totalCost is distance from Start point to this point
         // estimated Cost = Shortest Path between this point and the End point
         public float TotalCost, EstimatedCost;
-        public VertexPosition PreviousVertexPosition = null;
-        private readonly Vector3Int _position;
-        private bool _isTaken;
-        public int X => _position.x;
-
-        public int Y => _position.y;
-        
-        public int Z => _position.z;
-        
-        public Vector3Int Position => _position;
-
-        public bool IsTaken
-        {
-            get => _isTaken;
-            set => _isTaken = value;
-        }
 
         public VertexPosition(Vector3Int position, bool isTaken)
         {
-            _position = Vector3Int.RoundToInt(position);
-            _isTaken = isTaken;
+            Position = Vector3Int.RoundToInt(position);
+            IsTaken = isTaken;
             EstimatedCost = 0;
             TotalCost = 1;
         }
-        
+
+        public int X => Position.x;
+
+        public int Y => Position.y;
+
+        public int Z => Position.z;
+
+        public Vector3Int Position { get; }
+
+        public bool IsTaken { get; set; }
+
+        public int CompareTo(VertexPosition other)
+        {
+            if (EstimatedCost < other.EstimatedCost) // Put other object before other in list
+                return -1;
+
+            if (EstimatedCost > other.EstimatedCost) // Put this object after other object
+                return 1;
+
+            return 0; // Equals
+        }
+
+        public bool Equals(VertexPosition other)
+        {
+            return other != null && Position == other.Position;
+        }
+
 
         public int GetHashCode(VertexPosition obj)
         {
             return obj.GetHashCode();
         }
+
         public override int GetHashCode()
         {
-            return _position.GetHashCode();
+            return Position.GetHashCode();
         }
-        
-        public bool Equals(VertexPosition other)
-        {
-            return other != null && Position == other.Position;
-
-        }
-
-        public int CompareTo(VertexPosition other)
-        {
-            if (this.EstimatedCost < other.EstimatedCost) // Put other object before other in list
-            {
-                return -1;
-            }
-
-            if (this.EstimatedCost > other.EstimatedCost) // Put this object after other object
-            {
-                return 1;
-            }
-
-            return 0; // Equals
-        }
-        
     }
 }
