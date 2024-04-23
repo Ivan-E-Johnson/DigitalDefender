@@ -36,6 +36,9 @@ namespace Maps
         {
             
             mapGrid = new MapGrid(width, length);
+            _startPositions = new MapCenterPoint();
+            _endPositions = new MapCenterPoint();
+            
             gridVisualizer.VisualizeGrid(width, length);
             mapVisualizer.ClearMap();        // TODO FIX THIS SOMETHING DOESN't GET CLEARED WHEN YOU GENERATE A NEW MAP
             

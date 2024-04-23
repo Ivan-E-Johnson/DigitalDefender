@@ -1,4 +1,3 @@
-using Maps;
 using UnityEngine;
 
 namespace Maps
@@ -7,53 +6,46 @@ namespace Maps
     {
         public static void RandomlyChooseAndSetStartAndEnd(MapGrid mapGrid, ref MapCenterPoint startPoint,
             ref MapCenterPoint endPoint, bool randomPlacement,
-            EdgeDirection startingEdge = EdgeDirection.Left, EdgeDirection endingEdge = EdgeDirection.Right)
+            EdgeDirection startingEdge = EdgeDirection.Up, EdgeDirection endingEdge = EdgeDirection.Down)
         {
+            
+            // If we want to Enforce a minimum distance between start and end here would be where we do that;
             if (randomPlacement)
             {
-                startPoint = RandomlyChooseEdgePosition(mapGrid);
-                endPoint = RandomlyChooseEdgePosition(mapGrid);
+                startPoint.Position = RandomlyChooseEdgePosition(mapGrid, EdgeDirection.None);
+                endPoint.Position = RandomlyChooseEdgePosition(mapGrid, EdgeDirection.None);
             }
             else
             {
-                startPoint = RandomlyChooseEdgePosition(mapGrid, startingEdge);
-                endPoint = RandomlyChooseEdgePosition(mapGrid, endingEdge);
+                startPoint.Position = RandomlyChooseEdgePosition(mapGrid, startingEdge);
+                endPoint.Position = RandomlyChooseEdgePosition(mapGrid, endingEdge);
             }
 
             mapGrid.SetCell(startPoint.X, startPoint.Z, MapCellObjectType.Start);
             mapGrid.SetCell(endPoint.X, endPoint.Z, MapCellObjectType.End);
         }
 
-        private static MapCenterPoint RandomlyChooseEdgePosition(MapGrid mapGrid,
-            EdgeDirection startingDirection = EdgeDirection.None)
+        private static Vector3Int RandomlyChooseEdgePosition(MapGrid mapGrid,EdgeDirection startingDirection = EdgeDirection.None)
         {
             if (startingDirection == EdgeDirection.None) startingDirection = (EdgeDirection)Random.Range(1, 5);
-            MapCenterPoint newEdgePosition = null;
             
-            
-            var randX = Random.Range(0, mapGrid.Width);
-            var randZ = Random.Range(0, mapGrid.Length);
+            var edgePosition = Vector3Int.zero;
             switch (startingDirection)
             {
                 case EdgeDirection.Up:
-                    newEdgePosition = new MapCenterPoint(randX, 0, randZ);
+                    edgePosition = new Vector3Int(Random.Range(0, mapGrid.Width), 0, mapGrid.Length - 1);
                     break;
                 case EdgeDirection.Down:
-                    newEdgePosition = new MapCenterPoint(randX, mapGrid.Length - 1, randZ);
+                    edgePosition = new Vector3Int(Random.Range(0, mapGrid.Width), 0, 0);
                     break;
                 case EdgeDirection.Left:
-                    newEdgePosition = new MapCenterPoint(0, randZ, randX);
+                    edgePosition = new Vector3Int(0, 0, Random.Range(0, mapGrid.Length));
                     break;
                 case EdgeDirection.Right:
-                    newEdgePosition = new MapCenterPoint(mapGrid.Width - 1, randZ, randX);
+                    edgePosition = new Vector3Int(mapGrid.Width - 1, 0, Random.Range(0, mapGrid.Length));
                     break;
             }
-
-            if (newEdgePosition == null || mapGrid.IsCellTaken(newEdgePosition.X, newEdgePosition.Z))
-            {
-                throw new System.Exception("Edge Position is null");
-            }
-            return newEdgePosition;
+            return edgePosition;
         }
     }
 }

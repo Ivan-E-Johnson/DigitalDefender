@@ -9,7 +9,7 @@ namespace Maps
         public Vector3Int Position
         {
             get => _position;
-            private set => _position = value;
+            set => _position = value;
         }
 
         public int X => Position.x;
@@ -29,6 +29,11 @@ namespace Maps
         public MapCenterPoint(int x, int y, int z)
         {
             Position = new Vector3Int(x, y, z);
+        }
+
+        public MapCenterPoint()
+        {
+            Position = new Vector3Int(-1, -1, -1); // These should be invalid objects
         }
         
  
@@ -53,4 +58,7 @@ namespace Maps
             return Vector3Int.Distance(a.Position, b.Position);
         }
     }
+    
+    
+    
 }
