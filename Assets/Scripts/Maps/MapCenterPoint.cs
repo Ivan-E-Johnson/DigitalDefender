@@ -16,6 +16,11 @@ namespace Maps
         public int Y => Position.y;
         public int Z => Position.z;
 
+        public override string ToString()
+        {
+            return "Position" + Position;
+        }
+
         public MapCenterPoint(Vector3Int position)
         {
             _position = position;

@@ -15,9 +15,23 @@ namespace Maps
         private int _numberOfPeices = 0;
         private bool[] _obsticalesArray = null;
         private MapCenterPoint _startPoint, _endPoint;
+
+        public MapCenterPoint StartPoint
+        {
+            get => _startPoint;
+            set => _startPoint = value;
+        }
+
+        public MapCenterPoint EndPoint
+        {
+            get => _endPoint;
+            set => _endPoint = value;
+        }
+
         private List<KnightPiece> _knightPiecesList;
         private List<Vector3Int> _pathList;
-
+        
+        
 
         public MapGrid MapGrid => mapGrid;
         public int NumberOfPeices => _numberOfPeices;
@@ -29,12 +43,13 @@ namespace Maps
             this.mapGrid = mapGrid;
             _numberOfPeices = numberOfPieces;
             _knightPiecesList = new List<KnightPiece>();
+            _pathList = new List<Vector3Int>();
         }
 
         public void CreateMap(MapCenterPoint startPoint, MapCenterPoint endPoint, bool autoRepair)
         {
-            _startPoint = startPoint;
-            _endPoint = endPoint;
+            StartPoint = startPoint;
+            EndPoint = endPoint;
             _obsticalesArray = new bool[mapGrid.Width * mapGrid.Length];
             RandomlyPlaceKnightPieces(_numberOfPeices);
             _FillObsticalArrayFromKnightLocations();
@@ -42,7 +57,7 @@ namespace Maps
             if (autoRepair && _pathList.Count == 0)
             {
                 Debug.Log("No Path Found, Attempting to repair");
-                _RepairMap();
+                //_RepairMap();
             }
 
             foreach (var path in _pathList)
@@ -81,7 +96,7 @@ namespace Maps
                 }
 
                 // Recalculate the path and see if it is valid
-                _pathList = AStar.AStar.GetPath(_startPoint.Position, _endPoint.Position, _obsticalesArray, mapGrid);
+                _pathList = AStar.AStar.GetPath(StartPoint.Position, EndPoint.Position, _obsticalesArray, mapGrid);
                 if (_pathList != null && _pathList.Count > 0)
                 {
                     Debug.Log($"Path found with {number_of_current_obsticals} obstacles still in place.");
@@ -102,11 +117,11 @@ namespace Maps
 
         private void _FindPath()
         {
-            if (_startPoint == null || _endPoint == null || BoolObsticalesArray == null || mapGrid == null)
+            if (StartPoint == null || EndPoint == null || BoolObsticalesArray == null || mapGrid == null)
                 throw new ArgumentNullException("One or more arguments are null");
 
-            _pathList = AStar.AStar.GetPath(_startPoint.Position, _endPoint.Position, BoolObsticalesArray, MapGrid);
-
+            _pathList = AStar.AStar.GetPath(StartPoint.Position, EndPoint.Position, BoolObsticalesArray, MapGrid);
+            
             Debug.Log($"Path Length: {_pathList.Count}");
 
             foreach (var positionVector3Int in _pathList)
@@ -124,7 +139,7 @@ namespace Maps
 
         private bool CheckIfPositionCanBeObstical(Vector3Int position)
         {
-            if (position == _startPoint.Position || position == _endPoint.Position) return false;
+            if (position == StartPoint.Position || position == EndPoint.Position) return false;
             var index = mapGrid.CalculateIndexFromCoordinates(position.x, position.z);
             if (_obsticalesArray[index]) return false;
             return true;
@@ -145,7 +160,7 @@ namespace Maps
                     // Debug.Log($"$Attempting to place object {numberOfPeicesToPlace-PeicesLeftToPlace} at index {randomIndex} ");
                     var coords = mapGrid.CalculateCoordinatesFromIndex(randomIndex);
                     // Debug.Log($"Checking Coords: {coords}");
-                    if (coords == _startPoint.Position || coords == _endPoint.Position) continue;
+                    if (coords == StartPoint.Position || coords == EndPoint.Position) continue;
                     // Check if a knight piece already exists at this index
                     if (_knightPiecesList.Any(kp => kp.Position == coords)) continue;
                     _obsticalesArray[randomIndex] = true;
