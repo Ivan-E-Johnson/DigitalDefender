@@ -33,8 +33,6 @@ namespace Maps
         }
 
         public void GenerateNewMap()
-        
-
         {
             
             mapGrid = new MapGrid(width, length);

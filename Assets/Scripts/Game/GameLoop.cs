@@ -47,7 +47,7 @@ namespace Game
                     enemy.transform.position = new Vector3Int(0, 0, 0); //Make summon enemies in available spawn points 
                     // EntitySummoner.EnemiesInGame.Add(enemy); // Do we need this?
                 }
-
+                
 
                 //Spawn Towers
 
