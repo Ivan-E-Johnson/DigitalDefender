@@ -38,7 +38,7 @@ namespace Game
             EntitySummoner.Initialize();
             StartCoroutine(GameLoop());
             InvokeRepeating(nameof(TestSummonEnemy), 0f, 1f);
-            InvokeRepeating(nameof(TestRemoveEnemy), 0f, 1f);
+            InvokeRepeating(nameof(TestRemoveEnemy), 0f, 3f);
         }
 
 
@@ -53,7 +53,12 @@ namespace Game
         {
             // Remove an enemy from the game
             if (EntitySummoner.EnemiesInGame.Count > 1)
-                EntitySummoner.EnemiesInGame.RemoveAt(1); // Remove the enemy at index 1
+            {
+                var enemy_to_remove = EntitySummoner.EnemiesInGame[EntitySummoner.EnemiesInGame.Count - 1];
+                enemy_to_remove.gameObject.SetActive(false);
+                EntitySummoner.RemoveEnemy(enemy_to_remove);
+            }
+               
         }
 
         private IEnumerator GameLoop()

@@ -58,6 +58,7 @@ namespace Enemys
                     // Debug.Log("Summoning enemy from object pool queue");
                     summonedEnemy = enemyObjectPool.Dequeue();
                     summonedEnemy.Initialize();
+                    summonedEnemy.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -75,7 +76,7 @@ namespace Enemys
             {
                 Debug.Log($"Enemy with ID {enemyID} does not exist");
             }
-
+            EnemiesInGame.Add(summonedEnemy);
             return summonedEnemy;
         }
 
