@@ -41,9 +41,7 @@ namespace Maps
             
             gridVisualizer.VisualizeGrid(width, length);
             mapVisualizer.ClearMap();        // TODO FIX THIS SOMETHING DOESN't GET CLEARED WHEN YOU GENERATE A NEW MAP
-            
-            // This will initialize the start and end positions in the mapGrid
-            // 
+            // Cells for start and end are initialized in here 
             MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref _startPositions, ref _endPositions,
                 randomPlaceStartAndEnd,
                 startEdgeDirection, endEdgeDirection);
@@ -61,7 +59,8 @@ namespace Maps
             Debug.Log("*******************");
             var candidateMap = new CandidateMap(mapGrid, numberOfPieces);
             candidateMap.CreateMap(_startPositions, _endPositions, autoRepair);
-            mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), visualizeUsingPrefabs); 
+            mapVisualizer.InitializeMapCells(mapGrid,candidateMap.GetMapData()); // Rest of the 
+            mapVisualizer.VisualizeMap(mapGrid, visualizeUsingPrefabs); 
             
         }
         

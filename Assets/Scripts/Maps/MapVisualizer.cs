@@ -31,12 +31,18 @@ namespace Maps
         {
             _parent = transform;
         }
-
+        
+        public void ClearMap()
+        {
+            foreach (var obstical in _dictionaryOfObsticals.Values) Destroy(obstical);
+            _dictionaryOfObsticals.Clear();
+        }
+        
         // This unified method will handle both prefab and primitive visualization based on a boolean flag.
-        public void VisualizeMap(MapGrid mapGrid, MapData mapData, bool visualizeUsingPrefabs)
+        public void VisualizeMap(MapGrid mapGrid, bool visualizeUsingPrefabs)
         {
             // Set up the environment for the visualization process.
-            SetupMapEnvironment(mapGrid, mapData);
+
 
             // Determine the method of visualization and iterate through the map grid.
             for (var col = 0; col < mapGrid.Width; col++)
@@ -48,14 +54,12 @@ namespace Maps
                     VisualizeCell(cell, position, visualizeUsingPrefabs);
                 }
             }
-            //
-            // // Handle path and corner highlighting separately to keep concerns separated.
-            // HighlightPathWithCorners(mapData, visualizeUsingPrefabs);
         }
 
         // Set the cell types based on obstacles and path.
-        private void SetupMapEnvironment(MapGrid mapGrid, MapData mapData)
+        public void InitializeMapCells(MapGrid mapGrid, MapData mapData)
         {
+            // Name might be slightly misleading as the start end end points are initialized int eh MapHelper class
             
             for (var j = 1; j < mapData.Path.Count-1; j++) // Do not overwrite the start and end points
             {
@@ -84,7 +88,18 @@ namespace Maps
             }
         }
 
+        private bool CheckIfPathCorner(Vector3Int prev, Vector3Int current, Vector3Int next)
+        {
+            // Calculate direction vectors
+            Vector3Int vector1 = new Vector3Int { x = current.x - prev.x, z = current.z - prev.z };
+            Vector3Int vector2 = new Vector3Int { x = next.x - current.x, z = next.z - current.z };
+
+            // Check if the direction changes
+            return (vector1.x * vector2.z != vector1.z * vector2.x);
+        }
+
         // Visualizes each cell based on its type and whether to use prefabs or primitives.
+
         private void VisualizeCell(MapCell cell, Vector3Int position, bool usePrefabs)
         {
             var identityQuaternion = Quaternion.identity;
@@ -104,7 +119,7 @@ namespace Maps
 
             }
         }
-        
+
 
         private GameObject DeterminePrefab(MapCell cell)
         {
@@ -127,14 +142,6 @@ namespace Maps
         }
 
 
-
-        private void CreatePrefabIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new())
-        {
-            var placementPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
-            var element = Instantiate(prefab, placementPosition, rotation);
-            element.transform.parent = _parent;
-            _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
-        }
         private Color DeterminePrimitiveColor(MapCell cell)
         {
             switch (cell.ObjectType)
@@ -145,15 +152,13 @@ namespace Maps
                     return endColor;
                 case MapCellObjectType.Obstacle:
                     return obstacleColor;
-                case MapCellObjectType.Road:
-                    return Color.gray;  // Assuming a neutral color for roads
                 case MapCellObjectType.Waypoint:
                     return Color.cyan;  // Using knightColor for waypoints as an example
-                case MapCellObjectType.Empty:
                 default:
                     return Color.white;  // Default color for empty or undefined cell types
             }
         }
+
         private PrimitiveType DeterminePrimitiveShape(MapCell cell)
         {
             switch (cell.ObjectType)
@@ -173,52 +178,26 @@ namespace Maps
             }
         }
 
-
-
-
-// Checks if there is a corner between three consecutive points
-        public bool CheckIfPathCorner(Vector3Int prev, Vector3Int current, Vector3Int next)
+        private void CreatePrefabIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new())
         {
-            // Calculate direction vectors
-            Vector3Int vector1 = new Vector3Int { x = current.x - prev.x, z = current.z - prev.z };
-            Vector3Int vector2 = new Vector3Int { x = next.x - current.x, z = next.z - current.z };
-
-            // Check if the direction changes
-            return (vector1.x * vector2.z != vector1.z * vector2.x);
-        }
-        private bool PlaceKnightPeice(MapData mapData, Vector3Int coordinates)
-        {
-            foreach (var knightPeice in mapData.KnightPeicesList)
-                if (knightPeice.Position == coordinates)
-                    return true;
-
-            return false;
+            var placementPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
+            var element = Instantiate(prefab, placementPosition, rotation);
+            element.transform.parent = _parent;
+            _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
         }
 
-        private void _PlaceStartAndEndPointsPrimatives(MapData mapData)
-        {
-            CreateIndicator(mapData.StartPoint.Position, startColor, PrimitiveType.Cube);
-            CreateIndicator(mapData.EndPoint.Position, endColor, PrimitiveType.Cube);
-        }
-
-
-        public void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
+        private void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
         {
             var element = GameObject.CreatePrimitive(primitiveType);
             _dictionaryOfObsticals.Add(position, element);
 
-            element.transform.position = position + new Vector3(0.5f, 0.5f, 0.5f);
+            element.transform.position = position + new Vector3(0.5f, 0f, 0.5f);
+            element.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             element.transform.parent = _parent;
             var componentRenderer = element.GetComponent<Renderer>();
             componentRenderer.material.SetColor("_Color", color);
         }
 
-        public void ClearMap()
-        {
-            foreach (var obstical in _dictionaryOfObsticals.Values) Destroy(obstical);
-            _dictionaryOfObsticals.Clear();
-            
-            
-        }
+
     }
 }
