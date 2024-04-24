@@ -326,8 +326,8 @@ MonoBehaviour:
   visualizeUsingPrefabs: 0
   autoRepair: 1
   numberOfPieces: 4
-  width: 6
-  length: 8
+  width: 16
+  length: 16
 --- !u!1 &783408604
 GameObject:
   m_ObjectHideFlags: 0

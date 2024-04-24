@@ -32,107 +32,100 @@ namespace Maps
             _parent = transform;
         }
 
+        // This unified method will handle both prefab and primitive visualization based on a boolean flag.
         public void VisualizeMap(MapGrid mapGrid, MapData mapData, bool visualizeUsingPrefabs)
         {
-            if (visualizeUsingPrefabs)
-                VisualizeUsingPrefabs(mapGrid, mapData);
-            else
-                VisualizeUsingPrimitives(mapGrid, mapData);
-        }
+            // Set up the environment for the visualization process.
+            SetupMapEnvironment(mapGrid, mapData);
 
-        private void VisualizeUsingPrefabs(MapGrid mapGrid, MapData mapData)
-        {
-            for (var i = 0; i < mapData.Path.Count; i++)
-            {
-                var vec3IntPathPosition = mapData.Path[i];
-                if (vec3IntPathPosition != mapData.StartPoint.Position && vec3IntPathPosition != mapData.EndPoint.Position)
-                    mapGrid.SetCell(vec3IntPathPosition.x, vec3IntPathPosition.z, MapCellObjectType.Road);
-            }
-
+            // Determine the method of visualization and iterate through the map grid.
             for (var col = 0; col < mapGrid.Width; col++)
             {
                 for (var row = 0; row < mapGrid.Length; row++)
                 {
+                    var position = new Vector3Int(col, 0, row);
                     var cell = mapGrid.GetCell(col, row);
-                    var position = new Vector3(col, 0, row);
-                    var index = mapGrid.CalculateIndexFromCoordinates(col, row);
-                    if (mapData.ObsticalesArray[index] && cell.IsTaken) cell.ObjectType = MapCellObjectType.Obstacle;
-                    
-
-                    var identityQuaternion = Quaternion.identity;
-                    switch (cell.ObjectType)
-                    {
-                        case MapCellObjectType.Empty:
-                            CreatePrefabIndicator(position, tileEmptyPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.Waypoint:
-                            // We may want to have visuals of checkpoints later but maybe not
-                            CreatePrefabIndicator(position, tileEmptyPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.Start:
-                            CreatePrefabIndicator(position, tileStartPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.End:
-                            CreatePrefabIndicator(position, tileEndPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.Obstacle:
-                            CreatePrefabIndicator(position,
-                                tileEnvironmentPrefabs[Random.Range(0, tileEnvironmentPrefabs.Length)],
-                                identityQuaternion);
-                            break;
-                        case MapCellObjectType.Road:
-                            CreatePrefabIndicator(position, roadStraightPrefab,
-                                identityQuaternion); // TODO Dynamicly change the road prefab
-                            break;
-                    }
+                    VisualizeCell(cell, position, visualizeUsingPrefabs);
                 }
             }
+            //
+            // // Handle path and corner highlighting separately to keep concerns separated.
+            // HighlightPathWithCorners(mapData, visualizeUsingPrefabs);
         }
-        
-                private void VisualizeUsingPrimitives(MapGrid mapGrid, MapData mapData)
+
+        // Set the cell types based on obstacles and path.
+        private void SetupMapEnvironment(MapGrid mapGrid, MapData mapData)
         {
-            _PlaceStartAndEndPointsPrimatives(mapData);
+            
+            for (var j = 1; j < mapData.Path.Count-1; j++) // Do not overwrite the start and end points
+            {
+                var currentPosition = mapData.Path[j];
+                bool isCorner = j > 0 && j < mapData.Path.Count - 1 &&
+                                CheckIfPathCorner(mapData.Path[j - 1], currentPosition, mapData.Path[j + 1]);
+                if (isCorner)
+                {
+                    mapGrid.SetCell(currentPosition.x,currentPosition.z, MapCellObjectType.Waypoint);
+                }
+                else
+                {
+                    mapGrid.SetCell(currentPosition.x,currentPosition.z, MapCellObjectType.Road);
+                }
+            }
+
+            // Set cells for obstacles
             for (var i = 0; i < mapData.ObsticalesArray.Length; i++)
             {
                 if (mapData.ObsticalesArray[i])
                 {
                     var coordinates = mapGrid.CalculateCoordinatesFromIndex(i);
-                    if (coordinates != mapData.StartPoint.Position && coordinates != mapData.EndPoint.Position &&
-                        !_dictionaryOfObsticals.ContainsKey(coordinates))
-                    {
-                        if (PlaceKnightPeice(mapData, coordinates))
-                            CreateIndicator(new Vector3Int(coordinates.x, 0, coordinates.z), knightColor,
-                                PrimitiveType.Cylinder);
-                        else
-                            CreateIndicator(new Vector3Int(coordinates.x, 0, coordinates.z), obstacleColor,
-                                PrimitiveType.Sphere);
-                    }
+                    if (!_dictionaryOfObsticals.ContainsKey(coordinates))
+                        mapGrid.SetCell(coordinates.x, coordinates.z, MapCellObjectType.Obstacle);
                 }
             }
-            HighlightPathWithCorners(mapData);
         }
 
-        private void HighlightPathWithCorners(MapData mapData)
+        // Visualizes each cell based on its type and whether to use prefabs or primitives.
+        private void VisualizeCell(MapCell cell, Vector3Int position, bool usePrefabs)
         {
-            if (mapData.Path.Count < 3) return; // Need at least three points to define a turn
-            
-            CreateIndicator(mapData.Path[0], Color.blue, PrimitiveType.Cube);
-            
-            // Iterate through path points to detect corners
-            for (var j = 1; j < mapData.Path.Count - 1; j++)
+            var identityQuaternion = Quaternion.identity;
+            if (usePrefabs)
             {
-                var previousPosition = mapData.Path[j - 1];
-                var currentPosition = mapData.Path[j];
-                var nextPosition = mapData.Path[j + 1];
-                
-                if (CheckIfPathCorner(previousPosition, currentPosition, nextPosition)) 
-                    CreateIndicator(currentPosition, Color.cyan, PrimitiveType.Cube);
-                    
-                else
-                    CreateIndicator(currentPosition, Color.blue, PrimitiveType.Cube);
-                    
+                GameObject prefab = DeterminePrefab(cell);
+                CreatePrefabIndicator(position, prefab, identityQuaternion);
+            }
+            else
+            {
+                Color color = DeterminePrimitiveColor(cell);
+                if (color != Color.white)
+                {
+                    PrimitiveType shape = DeterminePrimitiveShape(cell);
+                    CreateIndicator(position, color, shape);
+                }
+
             }
         }
+        
+
+        private GameObject DeterminePrefab(MapCell cell)
+        {
+            switch (cell.ObjectType)
+            {
+                case MapCellObjectType.Start:
+                    return tileStartPrefab;
+                case MapCellObjectType.End:
+                    return tileEndPrefab;
+                case MapCellObjectType.Obstacle:
+                    return tileEnvironmentPrefabs[Random.Range(0, tileEnvironmentPrefabs.Length)];
+                case MapCellObjectType.Road:
+                    return roadStraightPrefab;
+                case MapCellObjectType.Waypoint:
+                    return roadCornerPrefab; // TODO Determine orientation of prefab
+                case MapCellObjectType.Empty:
+                default:
+                    return tileEmptyPrefab;
+            }
+        }
+
 
 
         private void CreatePrefabIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new())
@@ -142,6 +135,44 @@ namespace Maps
             element.transform.parent = _parent;
             _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
         }
+        private Color DeterminePrimitiveColor(MapCell cell)
+        {
+            switch (cell.ObjectType)
+            {
+                case MapCellObjectType.Start:
+                    return startColor;
+                case MapCellObjectType.End:
+                    return endColor;
+                case MapCellObjectType.Obstacle:
+                    return obstacleColor;
+                case MapCellObjectType.Road:
+                    return Color.gray;  // Assuming a neutral color for roads
+                case MapCellObjectType.Waypoint:
+                    return Color.cyan;  // Using knightColor for waypoints as an example
+                case MapCellObjectType.Empty:
+                default:
+                    return Color.white;  // Default color for empty or undefined cell types
+            }
+        }
+        private PrimitiveType DeterminePrimitiveShape(MapCell cell)
+        {
+            switch (cell.ObjectType)
+            {
+                case MapCellObjectType.Start:
+                case MapCellObjectType.End:
+                    return PrimitiveType.Cube;  // Using cubes for significant start/end points
+                case MapCellObjectType.Obstacle:
+                    return PrimitiveType.Sphere;  // Spheres for obstacles for a more pronounced effect
+                case MapCellObjectType.Road:
+                    return PrimitiveType.Cylinder;  // Cylinders might visually represent roads
+                case MapCellObjectType.Waypoint:
+                    return PrimitiveType.Capsule;  // Capsules for waypoints as a stylistic choice
+                case MapCellObjectType.Empty:
+                default:
+                    return PrimitiveType.Cube;  // Default shape
+            }
+        }
+
 
 
 
