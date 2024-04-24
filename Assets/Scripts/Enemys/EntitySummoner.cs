@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Maps;
 using UnityEngine;
 
 namespace Enemys
@@ -8,7 +9,6 @@ namespace Enemys
         public static List<Enemy> EnemiesInGame;
         public static Dictionary<int, GameObject> EnemyPrefabs;
         public static Dictionary<int, Queue<Enemy>> EnemyObjectPools;
-
         private static bool _isInitialized;
 
 
@@ -19,7 +19,7 @@ namespace Enemys
             {
                 EnemyPrefabs = new Dictionary<int, GameObject>();
                 EnemyObjectPools = new Dictionary<int, Queue<Enemy>>();
-                EnemiesInGame = new List<Enemy>();
+                EnemiesInGame = new List<Enemy>(); // list of Enemies alive currently
 
                 // Note: path give must match path to the scriptable object IE "Path/to/Ememies"
                 var enemies = Resources.LoadAll<EnemySummonData>($"Enemies");
@@ -44,8 +44,9 @@ namespace Enemys
             }
         }
 
-        public static Enemy SummonEnemy(int enemyID)
+        public static Enemy SummonEnemy(int enemyID,Vector3 spawnLocation)
         {
+            
             Enemy summonedEnemy = null;
 
             if (EnemyPrefabs.ContainsKey(enemyID))
@@ -54,14 +55,15 @@ namespace Enemys
 
                 if (enemyObjectPool.Count > 0)
                 {
-                    Debug.Log("Summoning enemy from object pool queue");
+                    // Debug.Log("Summoning enemy from object pool queue");
                     summonedEnemy = enemyObjectPool.Dequeue();
                     summonedEnemy.Initialize();
                 }
                 else
                 {
                     var enemyPrefab = EnemyPrefabs[enemyID];
-                    var newEnemyObject = Instantiate(enemyPrefab, Vector3Int.zero, Quaternion.identity);
+                    Debug.Log($"Summoning new enemy with ID {enemyID} at {spawnLocation}");
+                    var newEnemyObject = Instantiate(enemyPrefab, spawnLocation, Quaternion.identity);
                     summonedEnemy = newEnemyObject.GetComponent<Enemy>();
                     summonedEnemy.Initialize();
                 }

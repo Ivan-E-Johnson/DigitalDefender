@@ -8,6 +8,27 @@ namespace Maps
 {
     public class MapGenerator : MonoBehaviour
     {
+        [CanBeNull]
+        public MapCenterPoint StartPosition => _startPosition;
+
+        [CanBeNull]
+        public MapCenterPoint EndPosition => _endPosition;
+        
+        public MapGrid MapGrid => mapGrid;
+        public static int instatiationCount = 0;
+        public static MapGenerator Instance { get; private set; }
+        void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
         // Start is called before the first frame update
         [CanBeNull] public GridVisualizer gridVisualizer;
         [CanBeNull] public MapVisualizer mapVisualizer;
@@ -24,45 +45,43 @@ namespace Maps
 
         
         private MapGrid mapGrid;
-        [CanBeNull] private MapCenterPoint _startPositions;
-        [CanBeNull] private MapCenterPoint _endPositions;
-
-        private void Start()
-        {
-            GenerateNewMap();
-        }
-
+        [CanBeNull] private MapCenterPoint _startPosition;
+        [CanBeNull] private MapCenterPoint _endPosition;
+        
         public void GenerateNewMap()
         {
+            instatiationCount++;
             
             mapGrid = new MapGrid(width, length);
-            _startPositions = new MapCenterPoint();
-            _endPositions = new MapCenterPoint();
-            
+            _startPosition = new MapCenterPoint();
+            _endPosition = new MapCenterPoint();
+
+            gridVisualizer.RemoveGrid();
             gridVisualizer.VisualizeGrid(width, length);
             mapVisualizer.ClearMap();        // TODO FIX THIS SOMETHING DOESN't GET CLEARED WHEN YOU GENERATE A NEW MAP
             // Cells for start and end are initialized in here 
-            MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref _startPositions, ref _endPositions,
+            MapHelper.RandomlyChooseAndSetStartAndEnd(mapGrid, ref _startPosition, ref _endPosition,
                 randomPlaceStartAndEnd,
                 startEdgeDirection, endEdgeDirection);
             
             
-            if (_startPositions == null || _endPositions == null)
+            if (_startPosition == null || _endPosition == null)
             {
                 // Debug.Log("Start or End positions are null");
                 throw new System.Exception("Start or End positions are null");
             }
 
             Debug.Log("*******************");
-            Debug.Log("Start Position: " + _startPositions);
-            Debug.Log("End Position: " + _endPositions);
+            Debug.Log("Start Position: " + _startPosition);
+            Debug.Log("End Position: " + _endPosition);
             Debug.Log("*******************");
             var candidateMap = new CandidateMap(mapGrid, numberOfPieces);
-            candidateMap.CreateMap(_startPositions, _endPositions, autoRepair);
+            candidateMap.CreateMap(_startPosition, _endPosition, autoRepair);
             mapVisualizer.InitializeMapCells(mapGrid,candidateMap.GetMapData()); // Rest of the 
             mapVisualizer.VisualizeMap(mapGrid, visualizeUsingPrefabs); 
             
         }
+        
         
     }
 }
