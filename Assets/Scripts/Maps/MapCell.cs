@@ -1,33 +1,27 @@
+using UnityEngine;
+
 namespace Maps
 {
-    public class MapCell
+    public class MapCell : MapCenterPoint
     {
-        // Prefer to user Auto-Properties when possible
-        public int X { get; }
-        public int Z { get; }
         public bool IsTaken { get; set; }
-
         public MapCellObjectType ObjectType { get; set; }
 
-        public MapCell(int x, int z)
+        // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/base
+        public MapCell(int x, int z) :
+            base(new Vector3Int(x, 0, z)) // Assuming Y is always 0; Can Change this if want to change map height
         {
-            this.X = x;
-            this.Z = z;
             IsTaken = false;
             ObjectType = MapCellObjectType.Empty;
-
         }
-
-
     }
 
     public enum MapCellObjectType
     {
         Empty,
-        Road, 
-        Obstical,
+        Road,
+        Obstacle,
         Start,
         End
-
     }
 }
