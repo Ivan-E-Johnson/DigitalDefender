@@ -59,15 +59,9 @@ namespace Maps
                 Debug.Log("No Path Found, Attempting to repair");
                 //_RepairMap();
             }
-
-            foreach (var path in _pathList)
-            {
-                // Debug.Log($"Path: {path}");
-                // Hacky way to visualize the path
-                // _CreateIndicator(new Vector3Int(path.x, 0, path.z), Color.magenta, 
-                //     PrimitiveType.Cylinder);
-            }
         }
+        
+        
 
         private void _RepairMap()
         {

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Color = UnityEngine.Color;
 
 namespace Maps
 {
@@ -55,11 +57,16 @@ namespace Maps
                     var position = new Vector3(col, 0, row);
                     var index = mapGrid.CalculateIndexFromCoordinates(col, row);
                     if (mapData.ObsticalesArray[index] && cell.IsTaken) cell.ObjectType = MapCellObjectType.Obstacle;
+                    
 
                     var identityQuaternion = Quaternion.identity;
                     switch (cell.ObjectType)
                     {
                         case MapCellObjectType.Empty:
+                            CreatePrefabIndicator(position, tileEmptyPrefab, identityQuaternion);
+                            break;
+                        case MapCellObjectType.Waypoint:
+                            // We may want to have visuals of checkpoints later but maybe not
                             CreatePrefabIndicator(position, tileEmptyPrefab, identityQuaternion);
                             break;
                         case MapCellObjectType.Start:
@@ -81,17 +88,8 @@ namespace Maps
                 }
             }
         }
-
-        private void CreatePrefabIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new())
-        {
-            var placementPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
-            var element = Instantiate(prefab, placementPosition, rotation);
-            element.transform.parent = _parent;
-            _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
-        }
-
-
-        private void VisualizeUsingPrimitives(MapGrid mapGrid, MapData mapData)
+        
+                private void VisualizeUsingPrimitives(MapGrid mapGrid, MapData mapData)
         {
             _PlaceStartAndEndPointsPrimatives(mapData);
             for (var i = 0; i < mapData.ObsticalesArray.Length; i++)
@@ -111,16 +109,52 @@ namespace Maps
                     }
                 }
             }
+            HighlightPathWithCorners(mapData);
+        }
 
-            for (var j = 0; j < mapData.Path.Count; j++)
+        private void HighlightPathWithCorners(MapData mapData)
+        {
+            if (mapData.Path.Count < 3) return; // Need at least three points to define a turn
+            
+            CreateIndicator(mapData.Path[0], Color.blue, PrimitiveType.Cube);
+            
+            // Iterate through path points to detect corners
+            for (var j = 1; j < mapData.Path.Count - 1; j++)
             {
-                var pathPosition = mapData.Path[j];
-                if (pathPosition != mapData.StartPoint.Position && pathPosition != mapData.EndPoint.Position)
-                    CreateIndicator(pathPosition, Color.blue, PrimitiveType.Cube);
+                var previousPosition = mapData.Path[j - 1];
+                var currentPosition = mapData.Path[j];
+                var nextPosition = mapData.Path[j + 1];
+                
+                if (CheckIfPathCorner(previousPosition, currentPosition, nextPosition)) 
+                    CreateIndicator(currentPosition, Color.cyan, PrimitiveType.Cube);
+                    
+                else
+                    CreateIndicator(currentPosition, Color.blue, PrimitiveType.Cube);
+                    
             }
         }
 
 
+        private void CreatePrefabIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new())
+        {
+            var placementPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
+            var element = Instantiate(prefab, placementPosition, rotation);
+            element.transform.parent = _parent;
+            _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
+        }
+
+
+
+// Checks if there is a corner between three consecutive points
+        public bool CheckIfPathCorner(Vector3Int prev, Vector3Int current, Vector3Int next)
+        {
+            // Calculate direction vectors
+            Vector3Int vector1 = new Vector3Int { x = current.x - prev.x, z = current.z - prev.z };
+            Vector3Int vector2 = new Vector3Int { x = next.x - current.x, z = next.z - current.z };
+
+            // Check if the direction changes
+            return (vector1.x * vector2.z != vector1.z * vector2.x);
+        }
         private bool PlaceKnightPeice(MapData mapData, Vector3Int coordinates)
         {
             foreach (var knightPeice in mapData.KnightPeicesList)

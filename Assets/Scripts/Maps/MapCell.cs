@@ -22,6 +22,8 @@ namespace Maps
         Road,
         Obstacle,
         Start,
-        End
+        End,
+        Waypoint
+        
     }
 }

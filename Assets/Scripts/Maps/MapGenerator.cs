@@ -61,7 +61,8 @@ namespace Maps
             Debug.Log("*******************");
             var candidateMap = new CandidateMap(mapGrid, numberOfPieces);
             candidateMap.CreateMap(_startPositions, _endPositions, autoRepair);
-            mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), visualizeUsingPrefabs);
+            mapVisualizer.VisualizeMap(mapGrid, candidateMap.GetMapData(), visualizeUsingPrefabs); 
+            
         }
         
     }
