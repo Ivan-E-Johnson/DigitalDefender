@@ -44,14 +44,14 @@ namespace Maps
             _numberOfPeices = numberOfPieces;
             _knightPiecesList = new List<KnightPiece>();
             _pathList = new List<Vector3Int>();
+            _obsticalesArray = new bool[mapGrid.Width * mapGrid.Length];
         }
 
         public void CreateMap(MapCenterPoint startPoint, MapCenterPoint endPoint, bool autoRepair)
         {
             StartPoint = startPoint;
             EndPoint = endPoint;
-            _obsticalesArray = new bool[mapGrid.Width * mapGrid.Length];
-            RandomlyPlaceKnightPieces(_numberOfPeices);
+            RandomlyPlaceKnightPieces(NumberOfPeices);
             _FillObsticalArrayFromKnightLocations();
             _FindPath();
             if (autoRepair && _pathList.Count == 0)
@@ -59,15 +59,9 @@ namespace Maps
                 Debug.Log("No Path Found, Attempting to repair");
                 //_RepairMap();
             }
-
-            foreach (var path in _pathList)
-            {
-                // Debug.Log($"Path: {path}");
-                // Hacky way to visualize the path
-                // _CreateIndicator(new Vector3Int(path.x, 0, path.z), Color.magenta, 
-                //     PrimitiveType.Cylinder);
-            }
         }
+        
+        
 
         private void _RepairMap()
         {
@@ -121,21 +115,7 @@ namespace Maps
                 throw new ArgumentNullException("One or more arguments are null");
 
             _pathList = AStar.AStar.GetPath(StartPoint.Position, EndPoint.Position, BoolObsticalesArray, MapGrid);
-            
-            Debug.Log($"Path Length: {_pathList.Count}");
-
-            foreach (var positionVector3Int in _pathList)
-            {
-                // Debug.Log($"Postion :{positionVector3Int}");
-            }
         }
-
-        // private static void _CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
-        // {
-        //     var element = GameObject.CreatePrimitive(primitiveType);
-        //     element.transform.position = position + new Vector3(0.5f, 0.5f, 0.5f);
-        //     element.GetComponent<Renderer>().material.color = color;
-        // }
 
         private bool CheckIfPositionCanBeObstical(Vector3Int position)
         {
@@ -144,7 +124,6 @@ namespace Maps
             if (_obsticalesArray[index]) return false;
             return true;
         }
-
 
         private void RandomlyPlaceKnightPieces(int numberOfPeicesToPlace)
         {

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Color = UnityEngine.Color;
 
 namespace Maps
 {
@@ -29,56 +31,150 @@ namespace Maps
         {
             _parent = transform;
         }
-
-        public void VisualizeMap(MapGrid mapGrid, MapData mapData, bool visualizeUsingPrefabs)
+        
+        public void ClearMap()
         {
-            if (visualizeUsingPrefabs)
-                VisualizeUsingPrefabs(mapGrid, mapData);
-            else
-                VisualizeUsingPrimitives(mapGrid, mapData);
+            foreach (var obstical in _dictionaryOfObsticals.Values) Destroy(obstical);
+            _dictionaryOfObsticals.Clear();
         }
-
-        private void VisualizeUsingPrefabs(MapGrid mapGrid, MapData mapData)
+        
+        // This unified method will handle both prefab and primitive visualization based on a boolean flag.
+        public void VisualizeMap(MapGrid mapGrid, bool visualizeUsingPrefabs)
         {
-            for (var i = 0; i < mapData.Path.Count; i++)
-            {
-                var vec3IntPathPosition = mapData.Path[i];
-                if (vec3IntPathPosition != mapData.StartPoint.Position && vec3IntPathPosition != mapData.EndPoint.Position)
-                    mapGrid.SetCell(vec3IntPathPosition.x, vec3IntPathPosition.z, MapCellObjectType.Road);
-            }
+            // Set up the environment for the visualization process.
 
+
+            // Determine the method of visualization and iterate through the map grid.
             for (var col = 0; col < mapGrid.Width; col++)
             {
                 for (var row = 0; row < mapGrid.Length; row++)
                 {
+                    var position = new Vector3Int(col, 0, row);
                     var cell = mapGrid.GetCell(col, row);
-                    var position = new Vector3(col, 0, row);
-                    var index = mapGrid.CalculateIndexFromCoordinates(col, row);
-                    if (mapData.ObsticalesArray[index] && cell.IsTaken) cell.ObjectType = MapCellObjectType.Obstacle;
-
-                    var identityQuaternion = Quaternion.identity;
-                    switch (cell.ObjectType)
-                    {
-                        case MapCellObjectType.Empty:
-                            CreatePrefabIndicator(position, tileEmptyPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.Start:
-                            CreatePrefabIndicator(position, tileStartPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.End:
-                            CreatePrefabIndicator(position, tileEndPrefab, identityQuaternion);
-                            break;
-                        case MapCellObjectType.Obstacle:
-                            CreatePrefabIndicator(position,
-                                tileEnvironmentPrefabs[Random.Range(0, tileEnvironmentPrefabs.Length)],
-                                identityQuaternion);
-                            break;
-                        case MapCellObjectType.Road:
-                            CreatePrefabIndicator(position, roadStraightPrefab,
-                                identityQuaternion); // TODO Dynamicly change the road prefab
-                            break;
-                    }
+                    VisualizeCell(cell, position, visualizeUsingPrefabs);
                 }
+            }
+        }
+
+        // Set the cell types based on obstacles and path.
+        public void InitializeMapCells(MapGrid mapGrid, MapData mapData)
+        {
+            // Name might be slightly misleading as the start end end points are initialized int eh MapHelper class
+            
+            for (var j = 1; j < mapData.Path.Count-1; j++) // Do not overwrite the start and end points
+            {
+                var currentPosition = mapData.Path[j];
+                bool isCorner = j > 0 && j < mapData.Path.Count - 1 &&
+                                CheckIfPathCorner(mapData.Path[j - 1], currentPosition, mapData.Path[j + 1]);
+                if (isCorner)
+                {
+                    mapGrid.SetCell(currentPosition.x,currentPosition.z, MapCellObjectType.Waypoint);
+                }
+                else
+                {
+                    mapGrid.SetCell(currentPosition.x,currentPosition.z, MapCellObjectType.Road);
+                }
+            }
+
+            // Set cells for obstacles
+            for (var i = 0; i < mapData.ObsticalesArray.Length; i++)
+            {
+                if (mapData.ObsticalesArray[i])
+                {
+                    var coordinates = mapGrid.CalculateCoordinatesFromIndex(i);
+                    if (!_dictionaryOfObsticals.ContainsKey(coordinates))
+                        mapGrid.SetCell(coordinates.x, coordinates.z, MapCellObjectType.Obstacle);
+                }
+            }
+        }
+
+        private bool CheckIfPathCorner(Vector3Int prev, Vector3Int current, Vector3Int next)
+        {
+            // Calculate direction vectors
+            Vector3Int vector1 = new Vector3Int { x = current.x - prev.x, z = current.z - prev.z };
+            Vector3Int vector2 = new Vector3Int { x = next.x - current.x, z = next.z - current.z };
+
+            // Check if the direction changes
+            return (vector1.x * vector2.z != vector1.z * vector2.x);
+        }
+
+        // Visualizes each cell based on its type and whether to use prefabs or primitives.
+
+        private void VisualizeCell(MapCell cell, Vector3Int position, bool usePrefabs)
+        {
+            var identityQuaternion = Quaternion.identity;
+            if (usePrefabs)
+            {
+                GameObject prefab = DeterminePrefab(cell);
+                CreatePrefabIndicator(position, prefab, identityQuaternion);
+            }
+            else
+            {
+                Color color = DeterminePrimitiveColor(cell);
+                if (color != Color.white)
+                {
+                    PrimitiveType shape = DeterminePrimitiveShape(cell);
+                    CreateIndicator(position, color, shape);
+                }
+
+            }
+        }
+
+
+        private GameObject DeterminePrefab(MapCell cell)
+        {
+            switch (cell.ObjectType)
+            {
+                case MapCellObjectType.Start:
+                    return tileStartPrefab;
+                case MapCellObjectType.End:
+                    return tileEndPrefab;
+                case MapCellObjectType.Obstacle:
+                    return tileEnvironmentPrefabs[Random.Range(0, tileEnvironmentPrefabs.Length)];
+                case MapCellObjectType.Road:
+                    return roadStraightPrefab;
+                case MapCellObjectType.Waypoint:
+                    return roadCornerPrefab; // TODO Determine orientation of prefab
+                case MapCellObjectType.Empty:
+                default:
+                    return tileEmptyPrefab;
+            }
+        }
+
+
+        private Color DeterminePrimitiveColor(MapCell cell)
+        {
+            switch (cell.ObjectType)
+            {
+                case MapCellObjectType.Start:
+                    return startColor;
+                case MapCellObjectType.End:
+                    return endColor;
+                case MapCellObjectType.Obstacle:
+                    return obstacleColor;
+                case MapCellObjectType.Waypoint:
+                    return Color.cyan;  // Using knightColor for waypoints as an example
+                default:
+                    return Color.white;  // Default color for empty or undefined cell types
+            }
+        }
+
+        private PrimitiveType DeterminePrimitiveShape(MapCell cell)
+        {
+            switch (cell.ObjectType)
+            {
+                case MapCellObjectType.Start:
+                case MapCellObjectType.End:
+                    return PrimitiveType.Cube;  // Using cubes for significant start/end points
+                case MapCellObjectType.Obstacle:
+                    return PrimitiveType.Sphere;  // Spheres for obstacles for a more pronounced effect
+                case MapCellObjectType.Road:
+                    return PrimitiveType.Cylinder;  // Cylinders might visually represent roads
+                case MapCellObjectType.Waypoint:
+                    return PrimitiveType.Capsule;  // Capsules for waypoints as a stylistic choice
+                case MapCellObjectType.Empty:
+                default:
+                    return PrimitiveType.Cube;  // Default shape
             }
         }
 
@@ -90,70 +186,18 @@ namespace Maps
             _dictionaryOfObsticals.Add(Vector3Int.RoundToInt(position), element);
         }
 
-
-        private void VisualizeUsingPrimitives(MapGrid mapGrid, MapData mapData)
-        {
-            _PlaceStartAndEndPointsPrimatives(mapData);
-            for (var i = 0; i < mapData.ObsticalesArray.Length; i++)
-            {
-                if (mapData.ObsticalesArray[i])
-                {
-                    var coordinates = mapGrid.CalculateCoordinatesFromIndex(i);
-                    if (coordinates != mapData.StartPoint.Position && coordinates != mapData.EndPoint.Position &&
-                        !_dictionaryOfObsticals.ContainsKey(coordinates))
-                    {
-                        if (PlaceKnightPeice(mapData, coordinates))
-                            CreateIndicator(new Vector3Int(coordinates.x, 0, coordinates.z), knightColor,
-                                PrimitiveType.Cylinder);
-                        else
-                            CreateIndicator(new Vector3Int(coordinates.x, 0, coordinates.z), obstacleColor,
-                                PrimitiveType.Sphere);
-                    }
-                }
-            }
-
-            for (var j = 0; j < mapData.Path.Count; j++)
-            {
-                var pathPosition = mapData.Path[j];
-                if (pathPosition != mapData.StartPoint.Position && pathPosition != mapData.EndPoint.Position)
-                    CreateIndicator(pathPosition, Color.blue, PrimitiveType.Cube);
-            }
-        }
-
-
-        private bool PlaceKnightPeice(MapData mapData, Vector3Int coordinates)
-        {
-            foreach (var knightPeice in mapData.KnightPeicesList)
-                if (knightPeice.Position == coordinates)
-                    return true;
-
-            return false;
-        }
-
-        private void _PlaceStartAndEndPointsPrimatives(MapData mapData)
-        {
-            CreateIndicator(mapData.StartPoint.Position, startColor, PrimitiveType.Cube);
-            CreateIndicator(mapData.EndPoint.Position, endColor, PrimitiveType.Cube);
-        }
-
-
-        public void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
+        private void CreateIndicator(Vector3Int position, Color color, PrimitiveType primitiveType)
         {
             var element = GameObject.CreatePrimitive(primitiveType);
             _dictionaryOfObsticals.Add(position, element);
 
-            element.transform.position = position + new Vector3(0.5f, 0.5f, 0.5f);
+            element.transform.position = position + new Vector3(0.5f, 0f, 0.5f);
+            element.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             element.transform.parent = _parent;
             var componentRenderer = element.GetComponent<Renderer>();
             componentRenderer.material.SetColor("_Color", color);
         }
 
-        public void ClearMap()
-        {
-            foreach (var obstical in _dictionaryOfObsticals.Values) Destroy(obstical);
-            _dictionaryOfObsticals.Clear();
-            
-            
-        }
+
     }
 }
