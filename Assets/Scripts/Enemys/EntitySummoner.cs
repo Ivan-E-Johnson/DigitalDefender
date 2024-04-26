@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game;
 using Maps;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace Enemys
 {
     public class EntitySummoner : MonoBehaviour
     {
+        public static List<Transform> EnemyInGameTransforms;
         public static List<Enemy> EnemiesInGame;
         public static Dictionary<int, GameObject> EnemyPrefabs;
         public static Dictionary<int, Queue<Enemy>> EnemyObjectPools;
@@ -20,6 +22,7 @@ namespace Enemys
                 EnemyPrefabs = new Dictionary<int, GameObject>();
                 EnemyObjectPools = new Dictionary<int, Queue<Enemy>>();
                 EnemiesInGame = new List<Enemy>(); // list of Enemies alive currently
+                EnemyInGameTransforms = new List<Transform>(); // list of Enemy Transforms alive currently
 
                 // Note: path give must match path to the scriptable object IE "Path/to/Ememies"
                 var enemies = Resources.LoadAll<EnemySummonData>($"Enemies");
@@ -44,7 +47,7 @@ namespace Enemys
             }
         }
 
-        public static Enemy SummonEnemy(int enemyID,Vector3 spawnLocation)
+        public static Enemy SummonEnemy(int enemyID)
         {
             
             Enemy summonedEnemy = null;
@@ -62,14 +65,18 @@ namespace Enemys
                 }
                 else
                 {
+                    
+                    
                     var enemyPrefab = EnemyPrefabs[enemyID];
-                    Debug.Log($"Summoning new enemy with ID {enemyID} at {spawnLocation}");
-                    var newEnemyObject = Instantiate(enemyPrefab, spawnLocation, Quaternion.identity);
+                    // If we want to spwan the enemy at the "end" we need to either reverse the list or spawn at the first node
+                    var newEnemyObject = Instantiate(enemyPrefab, GameLoopManager.NodePositions[0], Quaternion.identity);
                     summonedEnemy = newEnemyObject.GetComponent<Enemy>();
                     summonedEnemy.Initialize();
                 }
-
+                
+                
                 summonedEnemy.id = enemyID;
+                EnemyInGameTransforms.Add(summonedEnemy.transform);
                 EnemiesInGame.Add(summonedEnemy);
             }
             else
@@ -77,6 +84,7 @@ namespace Enemys
                 Debug.Log($"Enemy with ID {enemyID} does not exist");
             }
             EnemiesInGame.Add(summonedEnemy);
+            summonedEnemy.id = enemyID;
             return summonedEnemy;
         }
 
@@ -85,6 +93,7 @@ namespace Enemys
             EnemyObjectPools[enemyToRemove.id].Enqueue(enemyToRemove);
             enemyToRemove.gameObject.SetActive(false);
             EnemiesInGame.Remove(enemyToRemove);
+            EnemyInGameTransforms.Remove(enemyToRemove.transform);
         }
     }
 }

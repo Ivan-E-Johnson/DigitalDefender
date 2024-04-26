@@ -83,6 +83,22 @@ namespace Maps
         {
             return z * Width + x;
         }
+        
+        public int GetNumberOfWaypoints()
+        {
+            var count = 0;
+            for (var row = 0; row < Length; row++)
+            {
+                for (var col = 0; col < Width; col++)
+                {
+                    if (cellGrid[row, col].ObjectType == MapCellObjectType.Waypoint)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
 
         
         // Should these be named the same thing? 

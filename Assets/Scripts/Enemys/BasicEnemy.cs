@@ -1,3 +1,4 @@
+using Game;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -5,12 +6,12 @@ namespace Enemys
 {
     public class Enemy : MonoBehaviour
     {
+        public int nodeIndex;
         public float maxHealth = 100;
         public float currentHealth = 100;
-        public float speed = 10;
-        public Vector3Int position;
+        public float speed = 1;
         public bool isAlive = true;
-
+        
 
         [FormerlySerializedAs("ID")] public int id;
 
@@ -18,6 +19,8 @@ namespace Enemys
         {
             currentHealth = maxHealth; //
             // Get Spawn position for the map (Should be set by the map)
+            transform.position = GameLoopManager.NodePositions[0];
+            nodeIndex = 0;
         }
 
         public void TakeDamage(float damage)
@@ -30,11 +33,6 @@ namespace Enemys
         {
             throw new System.NotImplementedException();
         }
-
-        public void MoveTowardPosition(Vector3Int targetPosition)
-        {
-            var moveDirection = (targetPosition - transform.position).normalized;
-            transform.position += moveDirection * speed * Time.deltaTime;
-        }
+        
     }
 }
