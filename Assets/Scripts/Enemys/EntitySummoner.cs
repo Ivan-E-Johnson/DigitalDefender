@@ -47,7 +47,7 @@ namespace Enemys
             }
         }
 
-        public static Enemy SummonEnemy(int enemyID)
+        public static void SummonEnemy(int enemyID)
         {
             
             Enemy summonedEnemy = null;
@@ -83,9 +83,7 @@ namespace Enemys
             {
                 Debug.Log($"Enemy with ID {enemyID} does not exist");
             }
-            EnemiesInGame.Add(summonedEnemy);
-            summonedEnemy.id = enemyID;
-            return summonedEnemy;
+            // return summonedEnemy;
         }
 
         public static void RemoveEnemy(Enemy enemyToRemove)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Enemys;
 using Maps;
 using Unity.Collections;
@@ -59,7 +60,7 @@ namespace Game
             StartCoroutine(GameLoop());
 
             // spawn 1 enemy
-            _enemysToSpawn.Enqueue(1);
+            InvokeRepeating("TestSummonEnemy", 1, 1f );
            
         }
         
@@ -70,7 +71,10 @@ namespace Game
                 loopShouldEnd = true;
             }
         }
-
+        public void TestSummonEnemy()
+        {
+            EnqueueEnemyToSpawns(1);
+        }
         
         public static void EnqueueEnemyToSpawns(int enemyID)
         {
@@ -93,6 +97,8 @@ namespace Game
                 //Spawn Enemies
                 if (_enemysToSpawn.Count > 0)
                 {
+                    Debug.Log("Spawning Enemy from Queue");
+                    Debug.Log($"Number of Enemies to spawn: {_enemysToSpawn.Count}");
                     EntitySummoner.SummonEnemy(_enemysToSpawn.Dequeue());
                     // EntitySummoner.EnemiesInGame.Add(enemy); // Do we need this?
                 }
@@ -133,6 +139,7 @@ namespace Game
                 for( int i = 0; i < EntitySummoner.EnemiesInGame.Count; i++)
                 {
                     
+                    Debug.Log($"AA NodeIndexes[{i}]: {NodeIndexes[i]}");
                     
                     EntitySummoner.EnemiesInGame[i].nodeIndex = NodeIndexes[i];
                     
@@ -142,11 +149,10 @@ namespace Game
                     }
                 }
                 
-                
-                
                 NodesToUse.Dispose();
                 EnemySpeeds.Dispose();
                 NodeIndexes.Dispose();
+                
 
                 //Tick Towers
 
@@ -195,9 +201,9 @@ namespace Game
                 if (transform.position == NodePositions[NodeIndexes[index]])
                 {
                     Debug.Log("We are at the node");
-                    // Debug.Log($"NodeIndexes[{index}]: {NodeIndexes[index]}");
+                    Debug.Log($"BNodeIndexes[{index}]: {NodeIndexes[index]}");
                     NodeIndexes[index] += 1;
-                    // Debug.Log($"NodeIndexes[{index}]: {NodeIndexes[index]}");
+                    Debug.Log($"NodeIndexes[{index}]: {NodeIndexes[index]}");
                 }
                 
             }
