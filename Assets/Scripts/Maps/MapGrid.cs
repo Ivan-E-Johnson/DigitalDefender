@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using Maps;
 using UnityEngine;
@@ -7,7 +8,8 @@ namespace Maps
     public class MapGrid
     {
         private MapCell[,] cellGrid;
-
+        public List<Vector3Int> waypoints; // Possibly move this to MapData class
+        
         public int Width { get; }
 
         public int Length { get; }
@@ -17,6 +19,7 @@ namespace Maps
             Width = width;
             Length = length;
             GenerateGrid();
+            waypoints = new List<Vector3Int>();
         }
 
         private void GenerateGrid()
@@ -43,6 +46,7 @@ namespace Maps
         {
             cellGrid[z, x].ObjectType = objectType;
             cellGrid[z, x].IsTaken = isTaken;
+            
         }
 
         public void SetCell(float x, float z, MapCellObjectType objectType, bool isTaken = false)
@@ -84,22 +88,6 @@ namespace Maps
             return z * Width + x;
         }
         
-        public int GetNumberOfWaypoints()
-        {
-            var count = 0;
-            for (var row = 0; row < Length; row++)
-            {
-                for (var col = 0; col < Width; col++)
-                {
-                    if (cellGrid[row, col].ObjectType == MapCellObjectType.Waypoint)
-                    {
-                        count++;
-                    }
-                }
-            }
-            return count;
-        }
-
         
         // Should these be named the same thing? 
         

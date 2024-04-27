@@ -13,7 +13,6 @@ namespace Maps
 
         [CanBeNull]
         public MapCenterPoint EndPosition => _endPosition;
-        
         public MapGrid MapGrid => mapGrid;
         private static int instatiationCount = 0;
         public static MapGenerator Instance { get; private set; }
@@ -84,22 +83,14 @@ namespace Maps
 
         public Vector3[] GetNodePositions()
         {
-            Vector3[] NodePoints = new Vector3[mapGrid.GetNumberOfWaypoints()];
-            var i = 0;
-            for (var col = 0; col < mapGrid.Width; col++)
+            var nodePositions = new Vector3[mapGrid.waypoints.Count + 2]; // Add 2 for start and end
+            nodePositions[0] = _startPosition.Position;
+            for (var i = 0; i < mapGrid.waypoints.Count; i++)
             {
-                for (var row = 0; row < mapGrid.Length; row++)
-                {
-                    var cell = mapGrid.GetCell(col, row);
-                    if (cell.ObjectType == MapCellObjectType.Waypoint)
-                    {
-                        NodePoints[i] = new Vector3(col, 0, row);
-                        Debug.Log($" Adding NodePoint: {NodePoints[i]}");
-                        i++;
-                    }
-                }
+                nodePositions[i + 1] = mapGrid.waypoints[i];
             }
-            return NodePoints;
+            nodePositions[nodePositions.Length - 1] = _endPosition.Position;
+            return nodePositions;
         }
         
         
