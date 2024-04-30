@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Enemys
 {
-    [CreateAssetMenu(fileName = "New EnemySummonData", menuName = "EnemySummoner")]
+    [CreateAssetMenu(fileName = "New EnemySummonData", menuName = "EnemySummonData")]
     public class EnemySummonData : ScriptableObject
     {
         public GameObject enemyPrefab;

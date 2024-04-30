@@ -24,6 +24,5 @@ namespace Maps
         Start,
         End,
         Waypoint
-        
     }
 }

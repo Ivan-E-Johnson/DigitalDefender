@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Color = UnityEngine.Color;
@@ -69,6 +70,9 @@ namespace Maps
                 if (isCorner)
                 {
                     mapGrid.SetCell(currentPosition.x,currentPosition.z, MapCellObjectType.Waypoint);
+                    
+                    mapGrid.waypoints.Add(new Vector3Int(currentPosition.x, 0, currentPosition.z));
+                    
                 }
                 else
                 {
