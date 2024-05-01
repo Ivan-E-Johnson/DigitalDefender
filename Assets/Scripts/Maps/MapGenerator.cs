@@ -92,7 +92,11 @@ namespace Maps
             nodePositions[nodePositions.Length - 1] = _endPosition.Position;
             return nodePositions;
         }
-        
+
+        public Vector3 getEndPositionVec3()
+        {
+            return _endPosition.Position;
+        }
         
     }
 }
