@@ -12,8 +12,10 @@ using UnityEngine.Jobs;
 
 namespace Game
 {
+    // This game loop seems like more of a Level Manager
     public class GameLoopManager : MonoBehaviour
     {
+        
         public bool loopShouldEnd;
         public Transform NodeParent;
         
