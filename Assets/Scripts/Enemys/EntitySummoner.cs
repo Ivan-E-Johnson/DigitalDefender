@@ -25,7 +25,7 @@ namespace Enemys
                 EnemyInGameTransforms = new List<Transform>(); // list of Enemy Transforms alive currently
 
                 // Note: path give must match path to the scriptable object IE "Path/to/Ememies"
-                var enemies = Resources.LoadAll<EnemySummonData>($"Enemies");
+                var enemies = Resources.LoadAll<EnemySummonData>($"Assets/Prefabs/Entities/Enemies");
                 _isInitialized = true;
 
                 // Test to see if the scriptable object was loaded
